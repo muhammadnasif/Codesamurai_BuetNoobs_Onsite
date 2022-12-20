@@ -65,7 +65,7 @@ def project(request):
 
 
 @api_view(['POST'])
-def post_issue(request):
+def post_feedback(request):
     # id = request.POST['coord']
     # location = Location.objects.get(id=id)
 
@@ -75,11 +75,23 @@ def post_issue(request):
     # # print(location)
     # issue = Issue.objects.create(location=location, description=request.POST['issue_msg'])
     # issue.save()
+
+    project_id = request.POST['project_id']
+    feedback_msg = request.POST['feedback_msg']
+
+    project = Project_Core.objects.get(id=project_id)
+
+    feedback = Feedback.objects.create(project_core=project, feedback=feedback_msg)
+    feedback.save()
+
+    # feedback saved
+
     return Response({'result': 'ok'})
 
 
 def project_convert(project):
     return {
+        'project_id':project.id,
         'project_name': project.name,
         'project_code': project.project_code,
         'lat': project.latitude,
@@ -87,6 +99,8 @@ def project_convert(project):
         'expected_cost': project.expected_cost,
         'timespan': project.timespan,
         'goal': project.goal,
+        'agency': project.executing_agency.name,
+
     }
 
 

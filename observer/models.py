@@ -56,6 +56,9 @@ class Feedback(models.Model):
     feedback = models.CharField(max_length=200)
     project_core = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.project_core.name + " -- " + self.feedback
+
 
 class Approved_Project(models.Model):
     project = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
