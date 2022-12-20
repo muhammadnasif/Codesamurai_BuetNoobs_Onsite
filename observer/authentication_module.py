@@ -21,14 +21,15 @@ def log_in(request):
                 return redirect(reverse('login'))
 
             if user.username == u_name and user.password == p_word:
-                create_session(request, u_name)
+                # create_session(request, u_name)
                 return redirect(reverse('observer:home'))
 
     return render(request, 'role_management/login.html')
 
 
-def create_session(request, username):
+def create_session(request, username, role):
     request.session['username'] = username
+    request.session['role'] = role
 
 
 def delete_session(request):
@@ -43,12 +44,26 @@ def logout_request(request):
 
 
 def registration(request):
-
     userTypes = UserTypes.objects.all()
 
     context = {
-        'userTypes' : userTypes,
+        'userTypes': userTypes,
     }
+
+    if request.method == 'POST':
+        print(request.POST)
+
+        username = request.POST['username']
+        password = request.POST['password']
+        confirm_password = request.POST['confirm_password']
+
+        if password == confirm_password:
+            user = User(username=username, password=password,
+                        userType=UserTypes.objects.get(code=request.POST['userType']))
+            user.save()
+
+
+            return redirect(reverse('login'))
 
     print("usertype print korchi")
     print(userTypes)
