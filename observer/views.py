@@ -26,7 +26,9 @@ from .models import *
 
 def load(request):
     # Displaying distinct categories
-    projects = [] #Project.objects.values('category').distinct()
+    # projects = Project.objects.values('category').distinct()
+
+    projects = []
 
     context = {
         "projects": projects,
@@ -37,10 +39,8 @@ def load(request):
 
 @api_view(['GET'])
 def projects(request):
-    read_data()
-    project_list = [
-        # project_convert(p) for p in Project.objects.all()
-    ]
+
+    project_list = read_data()
     return Response(project_list)
 
 
