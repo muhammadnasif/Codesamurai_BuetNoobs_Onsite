@@ -51,7 +51,6 @@ class UserTypes(models.Model):
 class User(models.Model):
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=50)
-    admin = models.BooleanField(default=False)
     userType = models.ForeignKey(UserTypes, on_delete=models.CASCADE)
 
     def __str__(self):
