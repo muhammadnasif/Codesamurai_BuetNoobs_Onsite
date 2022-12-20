@@ -1,3 +1,5 @@
+import string
+
 from django.urls import reverse
 
 from .models import *
@@ -13,15 +15,17 @@ def log_in(request):
 
             u_name = request.POST['username']
             p_word = request.POST['password']
+            role = ''
 
             try:
                 user = User.objects.get(username=u_name)
+                role = user.userType.code
             except:
                 request.session.clear()
                 return redirect(reverse('login'))
 
             if user.username == u_name and user.password == p_word:
-                # create_session(request, u_name)
+                create_session(request, u_name, role)
                 return redirect(reverse('observer:home'))
 
     return render(request, 'role_management/login.html')
@@ -44,7 +48,7 @@ def logout_request(request):
 
 
 def registration(request):
-    userTypes = UserTypes.objects.all()
+    userTypes = Agency.objects.all()
 
     context = {
         'userTypes': userTypes,
