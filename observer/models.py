@@ -38,7 +38,7 @@ class Agency(models.Model):
 class Project_Core(models.Model):
     name = models.CharField(max_length=200)
     project_code = models.CharField(max_length=50)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    locations = models.ManyToManyField(Location)
     executing_agency = models.ForeignKey(Agency, on_delete=models.CASCADE)
     latitude = models.FloatField()
     longitude = models.FloatField()

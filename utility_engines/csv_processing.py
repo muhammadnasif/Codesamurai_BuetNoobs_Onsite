@@ -87,7 +87,7 @@ def read_projects_file(project_file):
             else:
                 data = {}
                 data['name'] = row[0]
-                data['location'] = row[1]
+                data['location'] = row[1].split(',')
                 data['latitude'] = float(row[2])
                 data['longitude'] = float(row[3])
                 data['exec'] = row[4]
@@ -106,7 +106,8 @@ def read_projects_file(project_file):
                 else:
                     codes.add(data['project_id'])
 
-                locations.add(data['location'])
+                for l in data['location']:
+                    locations.add(l)
 
                 project_list.append(data)
 
@@ -132,7 +133,7 @@ def read_proposals_file(proposals_file):
             else:
                 data = {}
                 data['name'] = row[0]
-                data['location'] = row[1]
+                data['location'] = row[1].split(',')
                 data['latitude'] = float(row[2])
                 data['longitude'] = float(row[3])
                 data['exec'] = row[4]
@@ -149,7 +150,8 @@ def read_proposals_file(proposals_file):
                 else:
                     codes.add(data['project_id'])
 
-                locations.add(data['location'])
+                for l in data['location']:
+                    locations.add(l)
 
                 project_list.append(data)
 
@@ -191,6 +193,31 @@ def read_component_file(component_file):
     return component_list
 
 
+def read_constraint_file(constraint_file):
+    # fill like last function
+    constraint_list = []
+
+    with open(constraint_file, 'r') as file:
+        reader = csv.reader(file)
+
+        first = True
+
+        for row in reader:
+            if first:
+                first = False
+                pass
+            else:
+                data = {}
+                data['code'] = row[0]
+                data['max_limit'] = int(row[1])
+                data['constraint_type'] = row[2]
+
+                constraint_list.append(data)
+
+    return constraint_list
+
+
+
 def fill_initial_data():
     if UserTypes.objects.count() == 0:
         user_types = read_user_type_file(settings.BASE_DIR / 'Dataset/user_types.csv')
@@ -202,6 +229,8 @@ def fill_initial_data():
             )
             u.save()
 
+        print("FILLING USER TYPES")
+
     if Agency.objects.count() == 0:
         agencies = read_agency_file(settings.BASE_DIR / 'Dataset/agencies.csv')
         for agency in agencies:
@@ -212,6 +241,8 @@ def fill_initial_data():
                 description=agency['description']
             )
             a.save()
+
+        print("FILLING AGENCIES")
 
     if Approved_Project.objects.count() == 0:
         projects, locations = read_projects_file(settings.BASE_DIR / 'Dataset/projects.csv')
@@ -226,7 +257,6 @@ def fill_initial_data():
             core = Project_Core.objects.create(
                 name=project['name'],
                 project_code = project['project_id'],
-                location=Location.objects.get(name=project['location']),
                 executing_agency = Agency.objects.get(code=project['exec']),
                 latitude=project['latitude'],
                 longitude=project['longitude'],
@@ -235,6 +265,9 @@ def fill_initial_data():
                 goal = project['goal'],
                 is_approved = True
             )
+
+            for l in project['location']:
+                core.locations.add(Location.objects.get(name=l))
 
             core.save()
 
@@ -246,6 +279,8 @@ def fill_initial_data():
             )
 
             p.save()
+
+        print("FILLING PROJECTS")
 
     if Proposed_Project.objects.count() == 0:
         projects, locations = read_proposals_file(settings.BASE_DIR / 'Dataset/proposals.csv')
@@ -260,7 +295,6 @@ def fill_initial_data():
             core = Project_Core.objects.create(
                 name=project['name'],
                 project_code = project['project_id'],
-                location=Location.objects.get(name=project['location']),
                 executing_agency = Agency.objects.get(code=project['exec']),
                 latitude=project['latitude'],
                 longitude=project['longitude'],
@@ -270,6 +304,9 @@ def fill_initial_data():
                 is_approved = False
             )
 
+            for l in project['location']:
+                core.locations.add(Location.objects.get(name=l))
+
             core.save()
 
             p = Proposed_Project.objects.create(
@@ -278,6 +315,8 @@ def fill_initial_data():
             )
 
             p.save()
+
+        print("FILLING PROPOSALS")
 
     if Component.objects.all().count() == 0:
         components = read_component_file(settings.BASE_DIR / 'Dataset/components.csv')
@@ -295,9 +334,38 @@ def fill_initial_data():
         for component in components:
             c = Component.objects.get(component_id=component['component_id'])
             if component['depends_on'] != '':
-                print(component)
                 c.dependancy = Component.objects.get(component_id=component['depends_on'])
                 c.save()
+
+        print("FILLING COMPONENTS")
+
+
+    if Location_Constraint.objects.all().count() == 0 or Agency_Constraint.objects.all().count() == 0 or Yearly_Funding_Constraint.objects.all().count() == 0:
+        constraints = read_constraint_file(settings.BASE_DIR / 'Dataset/constraints.csv')
+        for constraint in constraints:
+            if constraint['constraint_type'] == 'location_limit':
+                print(constraint)
+                c = Location_Constraint.objects.create(
+                    location=Location.objects.get(name=constraint['code']),
+                    max_limit=constraint['max_limit']
+                )
+                c.save()
+            elif constraint['constraint_type'] == 'executing_agency_limit':
+                c = Agency_Constraint.objects.create(
+                    agency=Agency.objects.get(code=constraint['code']),
+                    max_limit=constraint['max_limit']
+                )
+                c.save()
+            elif constraint['constraint_type'] == 'yearly_funding':
+                c = Yearly_Funding_Constraint.objects.create(
+                    agency=Agency.objects.get(code=constraint['code']),
+                    max_funding=constraint['max_limit'] * 10000000
+                )
+                c.save()
+            else:
+                raise Exception('Invalid constraint type: ' + constraint['type'])
+
+        print("FILLING CONSTRAINTS")
 
     
 
