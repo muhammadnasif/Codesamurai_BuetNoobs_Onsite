@@ -30,9 +30,16 @@ def load(request):
     # projects = Project.objects.values('category').distinct()
 
     projects = []
+    if Agency.objects.get(name=request.session.get('agency')) == 'EXEC':
+        exec = True
+    else:
+        exec = False
 
     context = {
         "projects": projects,
+        "agency": Agency.objects.get(name=request.session.get('agency')),
+        "user": request.session.get('username'),
+        "exec": exec,
     }
     print(request.session)
 
