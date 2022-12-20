@@ -11699,3 +11699,17 @@ body {
   font-size: 0.75rem;
   border-radius: 0.25rem !important;
 }
+
+.demo-table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+.demo-tdh {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+.demo-tr:nth-child(even) {
+  background-color: #dddddd;
+}

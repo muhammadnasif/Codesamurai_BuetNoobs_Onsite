@@ -18,7 +18,6 @@ def log_in(request):
 
             try:
                 user = User.objects.get(username=u_name)
-                print("13123123")
                 agency = user.agency.name
                 print(agency)
             except:
