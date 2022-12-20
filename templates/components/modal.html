@@ -13,16 +13,24 @@
                 </p>
 
                 <p>
-                    <strong>Category: </strong>
-                    <text-input-area id="pop-up-category"></text-input-area>
+                    <strong>Agency : </strong>
+                    <text-input-area id="pop-up-agency"></text-input-area>
                 </p>
                 <p>
-                    <strong>Affiliated Agency: </strong>
-                    <text-input-area id="pop-up-affiliated-agency"></text-input-area>
+                    <strong>Expected Cost : </strong>
+                    <text-input-area id="pop-up-expected-cost"></text-input-area>
                 </p>
                 <p>
-                    <strong>Description: </strong>
-                    <text-input-area id="pop-up-description"></text-input-area>
+                    <strong>Actual Cost : </strong>
+                    <text-input-area id="pop-up-actual-cost"></text-input-area>
+                </p>
+                <p>
+                    <strong>Expected Time Span: </strong>
+                    <text-input-area id="pop-up-expected-time-span"></text-input-area>
+                </p>
+                <p>
+                    <strong>Goal: </strong>
+                    <text-input-area id="pop-up-goal"></text-input-area>
                 </p>
                 <p>
                     <strong>Project Start Time: </strong>
@@ -34,19 +42,18 @@
                 </p>
 
 
-
                 <form method="POST" action="">
                     {% csrf_token %}
                     <div class="mb-3">
                         <label for="form-issue" class="form-label">
                             <strong>
-                                Issues:
+                                Feedback:
                             </strong>
                         </label>
                         <textarea class="form-control" id="form-issue" rows="3"></textarea>
                     </div>
                     <div class="d-flex justify-content-end">
-                        <button class="btn btn-primary submit-issue">Add Issue</button>
+                        <button class="btn btn-primary submit-issue">Add Feedback</button>
                     </div>
                 </form>
 
@@ -60,3 +67,12 @@
         </div>
     </div>
 </div>
+{# project name #}
+{# list of lication #}
+{#agency#}
+{#expected_cost#}
+{#actual_cost#}
+{#expected_time_span#}
+{#goal#}
+{#start_date#}
+{#completion_date#}

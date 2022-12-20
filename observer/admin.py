@@ -11,6 +11,7 @@ admin.site.register(Project_Core)
 admin.site.register(User)
 admin.site.register(UserTypes)
 admin.site.register(Component)
+admin.site.register(Feedback)
 
 # write code to register all 3 constraints
 admin.site.register(Agency_Constraint)
