@@ -61,7 +61,7 @@ def read_agency_file(agency_file):
                 else:
                     codes.add(data['code'])
 
-                print(data)
+                # print(data)
 
                 agency_list.append(data)
 
@@ -156,6 +156,40 @@ def read_proposals_file(proposals_file):
     return project_list, locations
 
 
+def read_component_file(component_file):
+    component_list = []
+
+    with open(component_file, 'r') as file:
+        reader = csv.reader(file)
+        first = True
+
+        codes = set()
+
+        for row in reader:
+            if first:
+                first = False
+                pass
+            else:
+                data = {}
+                data['project_id'] = row[0]
+                data['executing_agency'] = row[1]
+                data['component_id'] = row[2]
+                data['component_type'] = row[3]
+                data['depends_on'] = row[4]
+                data['budget_ratio'] = float(row[5])
+
+
+                if data['component_id'] in codes:
+                    raise Exception('Duplicate component code: ' + data['component_id'])
+                elif not data['component_id'].startswith('comp'):
+                    raise Exception('Invalid component code: ' + data['component_id'])
+                else:
+                    codes.add(data['component_id'])
+
+                component_list.append(data)
+
+    return component_list
+
 
 def fill_initial_data():
     if UserTypes.objects.count() == 0:
@@ -244,4 +278,26 @@ def fill_initial_data():
             )
 
             p.save()
+
+    if Component.objects.all().count() == 0:
+        components = read_component_file(settings.BASE_DIR / 'Dataset/components.csv')
+        for component in components:
+            c = Component.objects.create(
+                project = Project_Core.objects.get(project_code=component['project_id']),
+                executing_agency=Agency.objects.get(code=component['executing_agency']),
+                component_id=component['component_id'],
+                type=component['component_type'],
+                dependancy=None,
+                budget_ratio=component['budget_ratio']
+            )
+            c.save()
+
+        for component in components:
+            c = Component.objects.get(component_id=component['component_id'])
+            if component['depends_on'] != '':
+                print(component)
+                c.dependancy = Component.objects.get(component_id=component['depends_on'])
+                c.save()
+
+    
 
