@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class UserTypes(models.Model):
     code = models.CharField(max_length=20)
     committee = models.CharField(max_length=20)
@@ -52,15 +53,22 @@ class Project_Core(models.Model):
     goal = models.TextField()
     is_approved = models.BooleanField(default=False)
 
-
     @property
     def rating(self):
-        if self.feedback_set.count() == 0:
+        if self.rating_set.count() == 0:
             return 0
-        return self.feedback_set.aggregate(models.Avg('rating'))['rating__avg']
+        return self.rating_set.aggregate(models.Avg('rating'))['rating__avg']
 
     def __str__(self):
         return self.name
+
+
+class Rating(models.Model):
+    rating = models.IntegerField()
+    project_core = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.rating)
 
 
 class Feedback(models.Model):
@@ -99,7 +107,7 @@ class Component(models.Model):
     type = models.CharField(max_length=50)
     dependancy = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
     budget_ratio = models.FloatField()
-    completion = models.FloatField(default = 0) # only meaningful for component of approved set
+    completion = models.FloatField(default=0)  # only meaningful for component of approved set
 
     def __str__(self):
         return self.component_id

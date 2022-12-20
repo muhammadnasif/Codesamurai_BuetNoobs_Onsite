@@ -5,51 +5,66 @@
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4">Proposed Projects by the Agency</h1>
-            <ol class="breadcrumb mb-4">
-                <li class="breadcrumb-item active">Add</li>
-            </ol>
-            <div class="proposal-form">
-                <form method="post" action="{% url 'observer:project-proposal' %}">
-                    {% csrf_token %}
-                    <label for="propose-form-name">Project name:</label><br>
+            <div class="row">
+                <div class="col shadow-lg m-4">
+                    <div class="row text-center mb-3">
+                        <h2>Propose Project</h2>
+                    </div>
+                    <div class="proposal-form form-control">
+                        <form method="post" action="{% url 'observer:project-proposal' %}">
+                            {% csrf_token %}
+                            <label for="propose-form-name">Project name:</label><br>
+                            <input type="text" id="propose-form-name" class="form-control" name="propose-form-name"><br>
 
-                    {% if update %}
-                        <p>{{ update.name }}</p>
-                        <input type="text" id="propose-form-name" name="propose-form-name" value="{{ update.update.name }}"><br>
-                    {% else %}
-                        <input type="text" id="propose-form-name" name="propose-form-name"><br>
-                    {% endif %}
-
-                    <label for="propose-form-area">Location Area:</label><br>
-                    <input type="text" id="propose-form-area" name="propose-form-area"><br>
-                    <label for="propose-form-lat">Latitude</label><br>
-                    <input type="number" id="propose-form-lat" name="propose-form-lat" step="0.0000001"><br>
-                    <label for="propose-form-long">Longitude</label><br>
-                    <input type="number" id="propose-form-long" name="propose-form-long" step="0.0000001"><br>
+                            <label for="propose-form-area">Location Area:</label><br>
+                            <input class="form-control" type="text" id="propose-form-area form-control"
+                                   name="propose-form-area"><br>
+                            <label for="propose-form-lat">Latitude</label><br>
+                            <input class="form-control" type="number" id="propose-form-lat" name="propose-form-lat" disabled
+                                   required><br>
+                            <label for="propose-form-long">Longitude</label><br>
+                            <input class="form-control" type="number" id="propose-form-long" name="propose-form-long" disabled
+                                   required><br>
 
 
-                    <label for="propose-form-cost">Project cost:</label><br>
-                    <input type="number" id="propose-form-cost" name="propose-form-cost"><br>
+                            <label for="propose-form-cost">Project cost:</label><br>
+                            <input class="form-control" type="number" id="propose-form-cost"
+                                   name="propose-form-cost"><br>
 
-                    <label for="propose-form-timespan">Project timespan:</label><br>
-                    <input type="number" id="propose-form-timespan" name="propose-form-timespan"><br>
+                            <label for="propose-form-timespan">Project timespan:</label><br>
+                            <input class="form-control" type="number" id="propose-form-timespan"
+                                   name="propose-form-timespan"><br>
 
-                    <label for="propose-form-goal">Project goal:</label><br>
-                    <input type="textarea" id="propose-form-goal" name="propose-form-goal"><br>
+                            <label for="propose-form-goal">Project goal:</label><br>
+                            <input class="form-control" type="textarea" id="propose-form-goal" name="propose-form-goal"><br>
+                            <div class="row text-center px-2">
+                                <button type="submit" class="btn btn-outline-primary">Propose</button>
+                            </div>
 
-                    <button type="submit">Submit</button>
-                </form>
+                        </form>
+                    </div>
+                </div>
+                <div class="col shadow-lg m-4">
+                    {% include 'components/location_register_map.html' %}
+
+                    <div class="d-flex justify-content-center">
+                        <h4 class="mt-4">
+                            Take the project Coordinates from the map
+                        </h4>
+                    </div>
+                </div>
             </div>
+
             <table class="demo-table">
-              <tr class="demo-tr">
-                <th class="demo-tdh">Name</th>
-                  <th class="demo-tdh">Location</th>
-                  <th class="demo-tdh">Cost</th>
-                  <th class="demo-tdh">Timespan</th>
-                  <th class="demo-tdh">Goal</th>
-                  <th class="demo-tdh">Proposed Date</th>
-                  <th class="demo-tdh">Edit Proposal</th>
-              </tr>
+                <tr class="demo-tr">
+                    <th class="demo-tdh">Name</th>
+                    <th class="demo-tdh">Location</th>
+                    <th class="demo-tdh">Cost</th>
+                    <th class="demo-tdh">Timespan</th>
+                    <th class="demo-tdh">Goal</th>
+                    <th class="demo-tdh">Proposed Date</th>
+                    <th class="demo-tdh">Edit Proposal</th>
+                </tr>
                 {% for p in context %}
                     <tr class="demo-tr">
                         <td class="demo-tdh">{{ p.name }}</td>
@@ -64,9 +79,10 @@
                         <td class="demo-tdh">{{ p.proposed_date }}</td>
                         <td class="demo-tdh">
                             <input type="hidden" id="core_id" value="{{ p.core_id }}">
-                            <button class="btn btn-success btn-proposal-edit" data-core-id="{{ p.core_id }}">Edit</button>
+                            <button class="btn btn-success btn-proposal-edit" data-core-id="{{ p.core_id }}">Edit
+                            </button>
                         </td>
-                      </tr>
+                    </tr>
                 {% endfor %}
             </table>
 
