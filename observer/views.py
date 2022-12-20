@@ -41,7 +41,10 @@ def load(request):
 @api_view(['GET'])
 def projects(request):
     fill_initial_data()
-    project_list = read_data()
+
+    project_list = [
+        project_convert(p) for p in Project_Core.objects.filter(is_approved=True)
+    ]
     return Response(project_list)
 
 
@@ -73,3 +76,14 @@ def post_issue(request):
     # issue.save()
     return Response({'result': 'ok'})
 
+
+def project_convert(project):
+    return {
+        'project_name': project.name,
+        'project_code': project.project_code,
+        'lat': project.latitude,
+        'lng': project.longitude,
+        'expected_cost': project.expected_cost,
+        'timespan': project.timespan,
+        'goal': project.goal,
+    }
