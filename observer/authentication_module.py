@@ -15,17 +15,18 @@ def log_in(request):
 
             u_name = request.POST['username']
             p_word = request.POST['password']
-            role = ''
 
             try:
                 user = User.objects.get(username=u_name)
-                role = user.userType.code
+                print('Got the User')
+                agency = user.agency.name
+                print(agency)
             except:
                 request.session.clear()
                 return redirect(reverse('login'))
 
             if user.username == u_name and user.password == p_word:
-                create_session(request, u_name, role)
+                create_session(request, u_name, agency)
                 return redirect(reverse('observer:home'))
 
     return render(request, 'role_management/login.html')
@@ -33,7 +34,7 @@ def log_in(request):
 
 def create_session(request, username, role):
     request.session['username'] = username
-    request.session['role'] = role
+    request.session['agency'] = role
 
 
 def delete_session(request):

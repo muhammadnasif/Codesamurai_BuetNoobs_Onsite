@@ -91,4 +91,20 @@ def project_convert(project):
 
 
 def project_proposal(request):
-    return render(request, 'base/projects.html')
+    agency = request.session.get('agency')
+    print(agency)
+    allProposed = Proposed_Project.objects.all()
+    revisedProposed = []
+    for p in allProposed:
+        if p.project.executing_agency.name == agency:
+            newP = {
+                'core_id':p.project.id,
+                'name': p.project.name,
+                'location':[l.name for l in p.project.locations.all()],
+                'cost':p.project.expected_cost,
+                'timespan':p.project.timespan,
+                'goal': p.project.goal,
+                'proposed_date':p.proposed_date
+            }
+            revisedProposed.append(newP)
+    return render(request, 'base/projects.html', {"context": revisedProposed})
