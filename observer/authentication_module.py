@@ -70,3 +70,7 @@ def registration(request):
     print("usertype print korchi")
 
     return render(request, 'role_management/registration.html', context)
+
+
+def test(request):
+    return render(request, 'role_management/login-2.html')
