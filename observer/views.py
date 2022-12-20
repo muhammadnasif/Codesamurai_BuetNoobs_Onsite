@@ -147,7 +147,26 @@ def project_proposal(request):
                 'proposed_date':p.proposed_date
             }
             revisedProposed.append(newP)
-    return render(request, 'base/projects.html', {"context": revisedProposed})
+    if request.method == 'GET':
+        return render(request, 'base/projects.html', {"context": revisedProposed})
+    else:
+        location = Location(name=request.POST['propose-form-area'])
+        # location.save()
+        agency = Agency.objects.get(name=request.session.get('agency'))
+        name = request.POST['propose-form-name']
+        lat = request.POST['propose-form-lat']
+        long = request.POST['propose-form-long']
+        cost = request.POST['propose-form-cost']
+        goal = request.POST['propose-form-goal']
+        timespan = request.POST['propose-form-timespan']
+        # print(name, lat, long, cost, goal, timespan)
+        project = Project_Core(name=name, executing_agency=agency, latitude=lat, longitude=long, expected_cost=cost, goal=goal, timespan=timespan)
+        # project.save()
+        project.locations.add(location)
+        pp = Proposed_Project(project=project)
+        pp.save()
+        return render(request, 'base/projects.html', {"context": revisedProposed})
+
 
 
 @api_view(['POST'])

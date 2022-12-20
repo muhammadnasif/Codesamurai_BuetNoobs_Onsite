@@ -43,7 +43,7 @@ class User(models.Model):
 
 class Project_Core(models.Model):
     name = models.CharField(max_length=200)
-    project_code = models.CharField(max_length=50)
+    project_code = models.CharField(max_length=50, blank=True)
     locations = models.ManyToManyField(Location)
     executing_agency = models.ForeignKey(Agency, on_delete=models.CASCADE)
     latitude = models.FloatField()
@@ -94,7 +94,7 @@ class Approved_Project(models.Model):
 
 class Proposed_Project(models.Model):
     project = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
-    proposed_date = models.DateField(auto_now=True)
+    proposed_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.project.name
