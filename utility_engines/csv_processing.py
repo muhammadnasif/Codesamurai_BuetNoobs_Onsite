@@ -139,4 +139,34 @@ def fill_initial_data():
     if Approved_Project.objects.count() == 0:
         projects, locations = read_projects_file(settings.BASE_DIR / 'Dataset/projects.csv')
 
-        print(locations)
+        for location in locations:
+            if not Location.objects.filter(name=location).exists():
+                l = Location.objects.create(name=location)
+                l.save()
+
+        for project in projects:
+            # create project core
+            core = Project_Core.objects.create(
+                name=project['name'],
+                project_code = project['project_id'],
+                location=Location.objects.get(name=project['location']),
+                executing_agency = Agency.objects.get(code=project['exec']),
+                latitude=project['latitude'],
+                longitude=project['longitude'],
+                expected_cost = int(project['cost'] * 10000000),
+                timespan = project['timespan'],
+                goal = project['goal'],
+                is_approved = True
+            )
+
+            core.save()
+
+            p = Approved_Project.objects.create(
+                project=core,
+                start_date=project['start_date'],
+                completion=project['completion'],
+                actual_cost=int(project['actual_cost'])
+            )
+
+            p.save()
+
