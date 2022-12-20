@@ -34,6 +34,7 @@ def load(request):
     context = {
         "projects": projects,
     }
+    print(request.session)
 
     return render(request, 'base/base.html', context)
 
