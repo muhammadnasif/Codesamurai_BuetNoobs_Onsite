@@ -26,7 +26,7 @@ from .models import *
 
 def load(request):
     # Displaying distinct categories
-    projects = Project.objects.values('category').distinct()
+    projects = [] #Project.objects.values('category').distinct()
 
     context = {
         "projects": projects,
@@ -39,7 +39,7 @@ def load(request):
 def projects(request):
     read_data()
     project_list = [
-        project_convert(p) for p in Project.objects.all()
+        # project_convert(p) for p in Project.objects.all()
     ]
     return Response(project_list)
 
@@ -48,7 +48,7 @@ def projects(request):
 def filter_projects(request):
     categories = request.GET.getlist('category')
     project_list = [
-        project_convert(p) for p in Project.objects.filter(category__in=categories)
+        # project_convert(p) for p in Project.objects.filter(category__in=categories)
     ]
     return Response(project_list)
 
@@ -61,37 +61,14 @@ def project(request):
 
 @api_view(['POST'])
 def post_issue(request):
-    id = request.POST['coord']
-    location = Location.objects.get(id=id)
+    # id = request.POST['coord']
+    # location = Location.objects.get(id=id)
 
-    # print(request.POST['coord'])
-    # latlong = request.POST['coord'].split(',')
-    # location = Location.objects.get(longitude=latlong[0], latitude=latlong[1])
-    # print(location)
-    issue = Issue.objects.create(location=location, description=request.POST['issue_msg'])
-    issue.save()
+    # # print(request.POST['coord'])
+    # # latlong = request.POST['coord'].split(',')
+    # # location = Location.objects.get(longitude=latlong[0], latitude=latlong[1])
+    # # print(location)
+    # issue = Issue.objects.create(location=location, description=request.POST['issue_msg'])
+    # issue.save()
     return Response({'result': 'ok'})
 
-
-def project_convert(project):
-
-    return {
-        'project_name': project.name,
-        'category': project.category,
-        'affiliated_agency': [
-            {
-                'name': a.name,
-                'id': a.id,
-            } for a in project.affiliated_agencies.all()
-        ],
-        'description': project.description,
-        'project_start_time': project.start_time,
-        'project_completion_time': project.completion_time,
-        'total_budget': project.total_budget,
-        'completion_percentage': project.completion_percentage,
-        'location_coordinates': [{
-            'coord': [loc.longitude, loc.latitude],
-            'id': loc.id,
-        } for loc in project.location_set.all()],
-        'id': project.id,
-    }
