@@ -61,7 +61,7 @@ def read_agency_file(agency_file):
                 else:
                     codes.add(data['code'])
 
-                print(data)
+                # print(data)
 
                 agency_list.append(data)
 
@@ -171,7 +171,7 @@ def read_component_file(component_file):
                 pass
             else:
                 data = {}
-                data['prject_id'] = row[0]
+                data['project_id'] = row[0]
                 data['executing_agency'] = row[1]
                 data['component_id'] = row[2]
                 data['component_type'] = row[3]
@@ -283,18 +283,20 @@ def fill_initial_data():
         components = read_component_file(settings.BASE_DIR / 'Dataset/components.csv')
         for component in components:
             c = Component.objects.create(
-                name=component['name'],
-                executing_agency=Agency.objects.get(code=component['exec']),
+                project = Project_Core.objects.get(project_code=component['project_id']),
+                executing_agency=Agency.objects.get(code=component['executing_agency']),
                 component_id=component['component_id'],
-                type=component['type'],
-                dependancy=None
+                type=component['component_type'],
+                dependancy=None,
+                budget_ratio=component['budget_ratio']
             )
             c.save()
 
         for component in components:
             c = Component.objects.get(component_id=component['component_id'])
-            if component['dependancy'] is not None:
-                c.dependancy = Component.objects.get(component_id=component['dependancy'])
+            if component['depends_on'] != '':
+                print(component)
+                c.dependancy = Component.objects.get(component_id=component['depends_on'])
                 c.save()
 
     
