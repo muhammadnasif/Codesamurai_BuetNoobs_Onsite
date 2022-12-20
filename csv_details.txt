@@ -1,0 +1,42 @@
+Projects.csv 
+name    - TItle of the project
+Location - Location of the Project
+Latitude - Latitude of the project location
+Longitude - Longitude of the project location
+Exec - Executing Agency
+Cost - Projected Cost in crores
+Timespan - Timespan of the project in years
+Project_id - Unique id of the project
+Goal - Goals of the project
+Start_date - Date of project start
+Completion - Percentage of project completed
+Actual_cost - Actual cost of the project to date
+
+Proposals.csv
+name    - TItle of the project
+Location - Location of the Project
+Latitude - Latitude of the project
+Longitude - Longitude of the project
+Exec - Executing Agency
+Cost - Projected Cost in crores
+Timespan - Timespan of the project in years
+Project_id - unique id of the project
+Goal - Objective of the project
+proposal_date    - When was the project proposed
+
+Components.csv
+Project_id - Reference to project in projects.csv or proposals.csv
+Executing_agency - Executing Agency
+component_id    - Unique id of the component
+Component_type - Type of the component
+
+
+Agencies.csv
+Code - Shortcode for the agency
+Name - Name of the agency
+Type - Type of the agency
+Description - Description of the objective of the agency
+
+
+links:
+https://classroom.google.com/c/NTgwMTA2MTUwMzA4/m/NTA5MDIwNjI3Nzg1/details
