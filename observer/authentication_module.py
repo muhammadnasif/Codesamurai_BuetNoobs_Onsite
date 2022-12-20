@@ -48,10 +48,10 @@ def logout_request(request):
 
 
 def registration(request):
-    userTypes = Agency.objects.all()
+    agencies = Agency.objects.all()
 
     context = {
-        'userTypes': userTypes,
+        'agencies': agencies,
     }
 
     if request.method == 'POST':
@@ -63,13 +63,10 @@ def registration(request):
 
         if password == confirm_password:
             user = User(username=username, password=password,
-                        userType=UserTypes.objects.get(code=request.POST['userType']))
+                        agency=Agency.objects.get(name=request.POST['agency']))
             user.save()
-
-
             return redirect(reverse('login'))
 
     print("usertype print korchi")
-    print(userTypes)
 
     return render(request, 'role_management/registration.html', context)
