@@ -19,4 +19,6 @@ urlpatterns = [
     path('review-project-proposal/', review_view.review_project_proposal, name='review-project-proposal'),
     path('running-project/', review_view.running_project, name='running-project'),
 
+    path('export-data/',observer_views.export_data, name='export-data'),
+    path('export-data-search/',observer_views.export_data_search, name='export-data-search'),
 ]
