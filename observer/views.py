@@ -44,7 +44,7 @@ def projects(request):
     fill_initial_data()
 
     project_list = [
-        project_convert(p) for p in Project_Core.objects.filter(is_approved=True)
+        approved_project_convert(p) for p in Project_Core.objects.filter(is_approved=True)
     ]
     return Response(project_list)
 
@@ -91,7 +91,7 @@ def post_feedback(request):
 
 def project_convert(project):
     return {
-        'project_id':project.id,
+        'project_id': project.id,
         'project_name': project.name,
         'project_code': project.project_code,
         'lat': project.latitude,
@@ -101,6 +101,30 @@ def project_convert(project):
         'goal': project.goal,
         'agency': project.executing_agency.name,
 
+    }
+
+@api_view(['GET'])
+def all_projects(request):
+    fill_initial_data()
+    project_list = [
+        approved_project_convert(p) for p in Approved_Project.objects.all()
+    ]
+    return Response(project_list)
+
+def approved_project_convert(approved_project):
+    return {
+        'project_id': approved_project.project.id,
+        'project_name': approved_project.project.name,
+        'project_code': approved_project.project.project_code,
+        'lat': approved_project.project.latitude,
+        'lng': approved_project.project.longitude,
+        'expected_cost': approved_project.project.expected_cost,
+        'timespan': approved_project.project.timespan,
+        'goal': approved_project.project.goal,
+        'agency': approved_project.project.executing_agency.name,
+        'start_time': approved_project.start_date,
+        'completion': approved_project.completion,
+        'actual_cost': approved_project.actual_cost,
     }
 
 

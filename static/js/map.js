@@ -7,7 +7,7 @@ var category_set = new Set();
 
 
 window.addEventListener("load", async(event) => {
-    const response = await fetch('/api/projects');
+    const response = await fetch('/api/all-projects');
     data = await response.json();
 
     console.log("data paisi");
@@ -30,8 +30,11 @@ window.addEventListener("load", async(event) => {
                     document.getElementById('pop-up-expected-cost').innerText = data[i]['expected_cost'];
                     document.getElementById('pop-up-expected-time-span').innerText = data[i]['timespan'];
                     document.getElementById('pop-up-goal').innerText = data[i]['goal'];
-
+                    document.getElementById('pop-up-start-time').innerText = data[i]['start_time'];
+                    document.getElementById('pop-up-completion-time').innerText = data[i]['completion'];
+                    // completion
                     document.getElementById('location-hidden').value = data[i]['project_id']
+                    document.getElementById('pop-up-actual-cost').value = data[i]['actual_cost']
 
                     $('#exampleModal').modal('show')
 

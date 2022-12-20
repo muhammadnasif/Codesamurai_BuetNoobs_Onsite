@@ -8,6 +8,7 @@ app_name = 'observer'
 
 urlpatterns = [
     path('api/projects/', observer_views.projects, name='projects'),
+    path('api/all-projects/', observer_views.all_projects, name='all-projects'),
     path('api/projects/filter', observer_views.filter_projects, name='filter_projects'),
     path('project', observer_views.project, name='project'),
     path('', observer_views.load, name='home'),
