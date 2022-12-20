@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class UserTypes(models.Model):
     code = models.CharField(max_length=20)
     committee = models.CharField(max_length=20)
@@ -19,7 +20,7 @@ class Location(models.Model):
 class Agency(models.Model):
     name = models.CharField(max_length=200)
     code = models.CharField(max_length=50, default="")
-    type = models.CharField(max_length=50) # either EXEC or APPROV
+    type = models.CharField(max_length=50)  # either EXEC or APPROV
     description = models.TextField()
 
     def __str__(self):
@@ -34,10 +35,11 @@ class User(models.Model):
     def __str__(self):
         return self.username + " " + str(self.username)
 
+
 class Project_Core(models.Model):
     name = models.CharField(max_length=200)
     project_code = models.CharField(max_length=50)
-    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    locations = models.ManyToManyField(Location)
     executing_agency = models.ForeignKey(Agency, on_delete=models.CASCADE)
     latitude = models.FloatField()
     longitude = models.FloatField()
@@ -48,6 +50,11 @@ class Project_Core(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Feedback(models.Model):
+    feedback = models.CharField(max_length=200)
+    project_core = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
 
 
 class Approved_Project(models.Model):
@@ -79,6 +86,7 @@ class Component(models.Model):
     def __str__(self):
         return self.component_id
 
+
 class Agency_Constraint(models.Model):
     agency = models.ForeignKey(Agency, on_delete=models.CASCADE)
     max_limit = models.IntegerField()
@@ -86,12 +94,14 @@ class Agency_Constraint(models.Model):
     def __str__(self):
         return self.agency.name + " - " + str(self.max_limit)
 
+
 class Location_Constraint(models.Model):
     location = models.ForeignKey(Location, on_delete=models.CASCADE)
     max_limit = models.IntegerField()
 
     def __str__(self):
         return self.location.name + " - " + str(self.max_limit)
+
 
 class Yearly_Funding_Constraint(models.Model):
     agency = models.ForeignKey(Agency, on_delete=models.CASCADE)
