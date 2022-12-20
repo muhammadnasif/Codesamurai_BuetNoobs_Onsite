@@ -74,7 +74,7 @@ class Approved_Project(models.Model):
 
     @property
     def completion(self):
-        return self.component_set.aggregate(models.Avg('completion'))['completion__avg']
+        return self.project.component_set.aggregate(models.Avg('completion'))['completion__avg']
 
 
 class Proposed_Project(models.Model):
