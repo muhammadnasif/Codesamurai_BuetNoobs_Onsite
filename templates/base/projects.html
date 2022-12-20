@@ -20,11 +20,11 @@
                             <input class="form-control" type="text" id="propose-form-area form-control"
                                    name="propose-form-area"><br>
                             <label for="propose-form-lat">Latitude</label><br>
-                            <input class="form-control" type="number" id="propose-form-lat" name="propose-form-lat"
-                                   step="0.0000001"><br>
+                            <input class="form-control" type="number" id="propose-form-lat" name="propose-form-lat" disabled
+                                   required><br>
                             <label for="propose-form-long">Longitude</label><br>
-                            <input class="form-control" type="number" id="propose-form-long" name="propose-form-long"
-                                   step="0.0000001"><br>
+                            <input class="form-control" type="number" id="propose-form-long" name="propose-form-long" disabled
+                                   required><br>
 
 
                             <label for="propose-form-cost">Project cost:</label><br>
@@ -45,7 +45,13 @@
                     </div>
                 </div>
                 <div class="col shadow-lg m-4">
-                    {% include 'components/map.html' %}
+                    {% include 'components/location_register_map.html' %}
+
+                    <div class="d-flex justify-content-center">
+                        <h4 class="mt-4">
+                            Take the project Coordinates from the map
+                        </h4>
+                    </div>
                 </div>
             </div>
 
