@@ -30,9 +30,16 @@ def load(request):
     # projects = Project.objects.values('category').distinct()
 
     projects = []
+    if Agency.objects.get(name=request.session.get('agency')) == 'EXEC':
+        exec = True
+    else:
+        exec = False
 
     context = {
         "projects": projects,
+        "agency": Agency.objects.get(name=request.session.get('agency')),
+        "user": request.session.get('username'),
+        "exec": exec,
     }
     print(request.session)
 
@@ -138,20 +145,26 @@ def project_proposal(request):
     for p in allProposed:
         if p.project.executing_agency.name == agency:
             newP = {
-                'core_id':p.project.id,
+                'core_id': p.project.id,
                 'name': p.project.name,
-                'location':[l.name for l in p.project.locations.all()],
-                'cost':p.project.expected_cost,
-                'timespan':p.project.timespan,
+                'location': [l.name for l in p.project.locations.all()],
+                'cost': p.project.expected_cost,
+                'timespan': p.project.timespan,
                 'goal': p.project.goal,
-                'proposed_date':p.proposed_date
+                'proposed_date': p.proposed_date
             }
             revisedProposed.append(newP)
     if request.method == 'GET':
         return render(request, 'base/projects.html', {"context": revisedProposed})
     else:
-        location = Location(name=request.POST['propose-form-area'])
-        # location.save()
+        print("adasdasddas")
+        print(request.POST)
+
+        location = Location.objects.filter(name=request.POST['propose-form-area'])
+        if len(location) == 0:
+            location = Location.objects.create(name=request.POST['propose-form-area'])
+            location.save()
+
         agency = Agency.objects.get(name=request.session.get('agency'))
         name = request.POST['propose-form-name']
         lat = request.POST['propose-form-lat']
@@ -160,18 +173,49 @@ def project_proposal(request):
         goal = request.POST['propose-form-goal']
         timespan = request.POST['propose-form-timespan']
         # print(name, lat, long, cost, goal, timespan)
-        project = Project_Core(name=name, executing_agency=agency, latitude=lat, longitude=long, expected_cost=cost, goal=goal, timespan=timespan)
-        # project.save()
+        project = Project_Core.objects.create(name=name, executing_agency=agency, latitude=lat, longitude=long, expected_cost=cost,
+                               goal=goal, timespan=timespan)
+        project.save()
         project.locations.add(location)
-        pp = Proposed_Project(project=project)
+        pp = Proposed_Project.objects.create(project=project)
         pp.save()
         return render(request, 'base/projects.html', {"context": revisedProposed})
 
+def update_proposal(request):
+    revisedProposed = getRevisedProposed(request.session.get('agency'))
+    print(request.POST['core_id'])
+    project = Project_Core.objects.get(id=request.POST['core_id'])
+    update = {
+        'name': project.name,
+        'area': project.locations.name,
+        'lat': project.latitude,
+        'long': project.longitude,
+        'cost': project.expected_cost,
+        'goal': project.goal,
+        'timespan': project.timespan
+    }
+    print(update)
+    return render(request, 'base/projects.html', {"context": revisedProposed, "update":update})
 
+def getRevisedProposed(agency):
+    allProposed = Proposed_Project.objects.all()
+    revisedProposed = []
+    for p in allProposed:
+        if p.project.executing_agency.name == agency:
+            newP = {
+                'core_id': p.project.id,
+                'name': p.project.name,
+                'location': [l.name for l in p.project.locations.all()],
+                'cost': p.project.expected_cost,
+                'timespan': p.project.timespan,
+                'goal': p.project.goal,
+                'proposed_date': p.proposed_date
+            }
+            revisedProposed.append(newP)
+    return revisedProposed
 
 @api_view(['POST'])
 def add_rating(request):
-
     if request.POST:
         print(request.POST)
         if 'rating' in request.POST:
