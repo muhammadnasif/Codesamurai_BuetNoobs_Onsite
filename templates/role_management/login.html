@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
 
@@ -10,7 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
     <meta name="description" content="" />
     <meta name="author" content="" />
-    <title>Dashboard - SB Admin</title>
+    <title>Login</title>
     <link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
     <!-- <link href="css/styles.css" rel="stylesheet" />#} -->
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
@@ -34,7 +33,9 @@
         </div>
 
         <button type="submit" class="btn btn-primary">Submit</button>
-
+        <p>
+            Create Account. <a href="{% url 'register' %}">Register</a>
+        </p>
 
     </form>
 </div>
