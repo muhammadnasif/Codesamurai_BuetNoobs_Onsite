@@ -3,6 +3,7 @@ from .models import *
 
 # Register your models here.
 
+admin.site.register(UserTypes)
 admin.site.register(Agency)
 admin.site.register(Proposed_Project)
 admin.site.register(Approved_Project)
