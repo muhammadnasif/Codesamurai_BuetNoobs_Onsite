@@ -1,41 +1,49 @@
-# import csv
+import csv
+from observer.models import *
+from django.conf import settings
 
-# def read_full_data(project_file, proposal_file, agency_file, component_file, user_type_file, constraints_file):
-    
-#     with open(settings.BASE_DIR / 'projects.csv', 'r') as file:
-#         reader = csv.reader(file)
-#         row_count = 0
-#         for row in reader:
-#             if row_count == 0:
-#                 attributes = row
-#             else:
-#                 data = {}
-#                 for i in range(len(attributes)):
-#                     data[attributes[i]] = row[i]
-#                 data['id'] = row_count
+def read_user_type_file(user_type_file):
 
-#                 locs = data['location_coordinates']
-#                 data['location_coordinates'] = []
+    # read user_type_file as csv
+    user_type_list = []
 
-#                 while locs:
-#                     l = locs.find('(')
-#                     if l == -1:
-#                         break
-#                     r = locs.find(')')
-#                     coord = [float(x) for x in locs[l+1:r].split(', ')]
-#                     data['location_coordinates'].append(coord)
-#                     locs = locs[r+1:]
+    with open(user_type_file, 'r') as file:
+        reader = csv.reader(file)
+        first = True
 
-#                 data['project_start_time'] = datetime.strptime(data['project_start_time'], '%Y-%m-%d')
-#                 data['project_completion_time'] = datetime.strptime(data['project_completion_time'], '%Y-%m-%d')
-#                 data['completion_percentage'] = float(data['completion_percentage'][:-1])
-#                 data['affiliated_agency'] = data['affiliated_agency'].split(', ')
-#                 data['total_budget'] = int(data['total_budget'][4:-1])*1000000
+        codes = set()
 
-#                 project_list.append(data)
-#             row_count += 1
+        for row in reader:
+            if first:
+                first = False
+                pass
+            else:
+                data = {}
+                data['code'] = row[0]
+                data['committee'] = row[1]
+                data['description'] = row[2]
 
-#     if Project.objects.all().count() == 0:
-#         fill_db(project_list)
+                if data['code'] in codes:
+                    raise Exception('Duplicate user type code: ' + data['code'])
+                else:
+                    codes.add(data['code'])
 
-#     return project_list
+                user_type_list.append(data)
+
+                print(data)
+
+
+    return user_type_list
+
+def fill_initial_data():
+    if UserTypes.objects.count() != 0:
+        return
+
+    user_types = read_user_type_file(settings.BASE_DIR / 'Dataset/user_types.csv')
+    for user_type in user_types:
+        u = UserTypes.objects.create(
+            code=user_type['code'],
+            committee=user_type['committee'],
+            description=user_type['description']
+        )
+        u.save()
