@@ -10,6 +10,9 @@ window.addEventListener("load", async(event) => {
     const response = await fetch('/api/projects');
     data = await response.json();
 
+    console.log("data paisi");
+    console.log(data);
+
     total_coord = 0;
     total_marker = 0;
 
