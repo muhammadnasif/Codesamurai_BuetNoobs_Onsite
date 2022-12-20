@@ -52,6 +52,13 @@ class Project_Core(models.Model):
     goal = models.TextField()
     is_approved = models.BooleanField(default=False)
 
+
+    @property
+    def rating(self):
+        if self.feedback_set.count() == 0:
+            return 0
+        return self.feedback_set.aggregate(models.Avg('rating'))['rating__avg']
+
     def __str__(self):
         return self.name
 
