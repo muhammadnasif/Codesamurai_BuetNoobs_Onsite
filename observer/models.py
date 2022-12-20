@@ -1,5 +1,6 @@
 from django.db import models
 
+
 # Create your models here.
 
 # class Agency(models.Model):
@@ -25,7 +26,7 @@ from django.db import models
 #     longitude = models.FloatField()
 #     latitude = models.FloatField()
 #     project = models.ForeignKey(Project, on_delete = models.CASCADE)
-    
+
 #     def __str__(self):
 #         return f'({self.longitude}, {self.latitude})'
 
@@ -38,13 +39,24 @@ from django.db import models
 #         return self.description
 
 
+class UserTypes(models.Model):
+    code = models.CharField(max_length=20)
+    committee = models.CharField(max_length=20)
+    desciption = models.CharField(max_length=200)
+
+    def __str__(self):
+        return self.code
+
+
 class User(models.Model):
     username = models.CharField(max_length=20)
     password = models.CharField(max_length=50)
     admin = models.BooleanField(default=False)
+    userType = models.ForeignKey(UserTypes, on_delete=models.CASCADE)
 
     def __str__(self):
-        return self.username
+        return self.username + " " + str(self.username)
+
 
 class Location(models.Model):
     name = models.CharField(max_length=200)
@@ -71,12 +83,13 @@ class Project_Core(models.Model):
     latitude = models.FloatField()
     longitude = models.FloatField()
     expected_cost = models.IntegerField()
-    timespan = models.IntegerField() # years
+    timespan = models.IntegerField()  # years
     goal = models.TextField()
     is_approved = models.BooleanField(default=False)
 
     def __str__(self):
         return self.name
+
 
 class Approved_Project(models.Model):
     project = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
@@ -87,12 +100,14 @@ class Approved_Project(models.Model):
     def __str__(self):
         return self.project.name
 
+
 class Proposed_Project(models.Model):
     project = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
     proposed_date = models.DateField()
 
     def __str__(self):
         return self.project.name
+
 
 class Component(models.Model):
     project = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
@@ -103,6 +118,5 @@ class Component(models.Model):
 
     def __str__(self):
         return self.component_id
-
 
 # todo constraints
