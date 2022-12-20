@@ -33,6 +33,5 @@ $('.submit-issue').click(function (e) {
             }
         }
     )
-
 })
 
