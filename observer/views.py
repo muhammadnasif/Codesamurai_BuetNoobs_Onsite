@@ -86,7 +86,7 @@ def post_feedback(request):
 
     # feedback saved
 
-    return Response({'result': 'ok'})
+    return Response({'status': '1'})
 
 
 def project_convert(project):
@@ -152,7 +152,6 @@ def project_proposal(request):
 
 @api_view(['POST'])
 def add_rating(request):
-    # print(Project_Core.objects)
 
     if request.POST:
         print(request.POST)
@@ -161,6 +160,6 @@ def add_rating(request):
                                            project_core=Project_Core.objects.get(id=request.POST['project_id']))
             rating.save()
 
-            return Response({'result': 'ok'})
+            return Response({'status': '1'})
 
-    return Response({'result': 'rating'})
+    return Response({'msg': 'no data saved'})

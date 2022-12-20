@@ -12,7 +12,7 @@ $('.submit-rating').click(function (e) {
     mydata = {
         // feedback_msg: feedback_msg,
         csrfmiddlewaretoken: csrf_token,
-        rating : rating,
+        rating: rating,
         project_id: project_id
     }
     console.log(mydata);
@@ -24,8 +24,17 @@ $('.submit-rating').click(function (e) {
             data: mydata,
             success: function (data) {
 
-                console.log("rating submitted successfully");
-                console.log(data);
+                console.log(data)
+
+                if (data.status == '1') {
+                    console.log('rating submitted')
+                    document.getElementById('toast-msg-body').innerText = 'Rating submitted successfully'
+                    $("#success-toast").toast("show");
+                }
+                else{
+                    document.getElementById('toast-msg-body-failure').innerText = 'Rating not submitted'
+                    $("#failure-toast").toast("show");
+                }
 
             }
         }

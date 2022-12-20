@@ -24,9 +24,11 @@ $('.submit-issue').click(function (e) {
             method: 'POST',
             data: mydata,
             success: function (data) {
-
-                console.log("issue submitted successfully");
-                console.log(data);
+                console.log(data)
+                if (data.status == '1') {
+                    document.getElementById('toast-msg-body').innerText = 'Feedback submitted successfully'
+                    $("#success-toast").toast("show");
+                }
 
             }
         }
