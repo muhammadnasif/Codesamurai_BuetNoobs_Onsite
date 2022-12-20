@@ -8,4 +8,5 @@ app_name = 'utility'
 
 urlpatterns = [
     path('suggest/<int:pk>/', utility_views.suggest_query, name='suggest_query'),
+    path('expected_ends/', utility_views.expected_ends_post, name='expected_ends_post')
 ]
