@@ -111,7 +111,6 @@ venv.bak/
 dmypy.json
 
 # Pyre type checker
-.pyre/
-
-# lock files
 .~lock.*
+.pyre/
+.idea/
