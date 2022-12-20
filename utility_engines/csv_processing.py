@@ -1,4 +1,6 @@
 import csv
+from observer.models import *
+from django.conf import settings
 
 def read_user_type_file(user_type_file):
 
@@ -28,9 +30,20 @@ def read_user_type_file(user_type_file):
 
                 user_type_list.append(data)
 
+                print(data)
+
 
     return user_type_list
 
 def fill_initial_data():
-    user_types = read_user_type_file('../Dataset/user_type.csv')
-    print(user_types)
+    if UserTypes.objects.count() != 0:
+        return
+
+    user_types = read_user_type_file(settings.BASE_DIR / 'Dataset/user_types.csv')
+    for user_type in user_types:
+        u = UserTypes.objects.create(
+            code=user_type['code'],
+            committee=user_type['committee'],
+            description=user_type['description']
+        )
+        u.save()

@@ -3,7 +3,7 @@ from .models import *
 
 # Register your models here.
 
-# admin.site.register(Agency)
+admin.site.register(UserTypes)
 # admin.site.register(Project)
 # admin.site.register(Location)
 # admin.site.register(Issue)

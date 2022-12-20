@@ -42,7 +42,7 @@ from django.db import models
 class UserTypes(models.Model):
     code = models.CharField(max_length=20)
     committee = models.CharField(max_length=20)
-    desciption = models.CharField(max_length=200)
+    description = models.CharField(max_length=200)
 
     def __str__(self):
         return self.code

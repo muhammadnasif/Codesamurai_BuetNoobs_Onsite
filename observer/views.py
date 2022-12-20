@@ -5,6 +5,7 @@ from rest_framework.decorators import api_view
 from .models import *
 from .csv_tool import read_data
 from .models import *
+from utility_engines.csv_processing import fill_initial_data
 
 
 # Create your views here.
@@ -37,6 +38,7 @@ def load(request):
 
 @api_view(['GET'])
 def projects(request):
+    fill_initial_data()
     read_data()
     project_list = [
         # project_convert(p) for p in Project.objects.all()
