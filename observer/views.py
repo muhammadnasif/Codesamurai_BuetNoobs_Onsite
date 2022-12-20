@@ -129,22 +129,7 @@ def approved_project_convert(approved_project):
 
 
 def project_proposal(request):
-    agency = request.session.get('agency')
-    print(agency)
-    allProposed = Proposed_Project.objects.all()
-    revisedProposed = []
-    for p in allProposed:
-        if p.project.executing_agency.name == agency:
-            newP = {
-                'core_id':p.project.id,
-                'name': p.project.name,
-                'location':[l.name for l in p.project.locations.all()],
-                'cost':p.project.expected_cost,
-                'timespan':p.project.timespan,
-                'goal': p.project.goal,
-                'proposed_date':p.proposed_date
-            }
-            revisedProposed.append(newP)
+    revisedProposed = getRevisedProposed(request.session.get('agency'))
     if request.method == 'GET':
         return render(request, 'base/projects.html', {"context": revisedProposed})
     elif request.method == 'POST':
@@ -168,4 +153,36 @@ def project_proposal(request):
         pp.save()
         return render(request, 'base/projects.html', {"context": revisedProposed})
 
+def update_proposal(request):
+    revisedProposed = getRevisedProposed(request.session.get('agency'))
+    print(request.POST['core_id'])
+    project = Project_Core.objects.get(id=request.POST['core_id'])
+    update = {
+        'name': project.name,
+        'area': project.locations.name,
+        'lat': project.latitude,
+        'long': project.longitude,
+        'cost': project.expected_cost,
+        'goal': project.goal,
+        'timespan': project.timespan
+    }
+    print(update)
+    return render(request, 'base/projects.html', {"context": revisedProposed, "update":update})
+
+def getRevisedProposed(agency):
+    allProposed = Proposed_Project.objects.all()
+    revisedProposed = []
+    for p in allProposed:
+        if p.project.executing_agency.name == agency:
+            newP = {
+                'core_id': p.project.id,
+                'name': p.project.name,
+                'location': [l.name for l in p.project.locations.all()],
+                'cost': p.project.expected_cost,
+                'timespan': p.project.timespan,
+                'goal': p.project.goal,
+                'proposed_date': p.proposed_date
+            }
+            revisedProposed.append(newP)
+    return revisedProposed
 

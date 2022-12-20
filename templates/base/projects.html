@@ -12,7 +12,13 @@
                 <form method="post" action="{% url 'observer:project-proposal' %}">
                     {% csrf_token %}
                     <label for="propose-form-name">Project name:</label><br>
-                    <input type="text" id="propose-form-name" name="propose-form-name"><br>
+
+                    {% if update %}
+                        <p>{{ update.name }}</p>
+                        <input type="text" id="propose-form-name" name="propose-form-name" value="{{ update.update.name }}"><br>
+                    {% else %}
+                        <input type="text" id="propose-form-name" name="propose-form-name"><br>
+                    {% endif %}
 
                     <label for="propose-form-area">Location Area:</label><br>
                     <input type="text" id="propose-form-area" name="propose-form-area"><br>
