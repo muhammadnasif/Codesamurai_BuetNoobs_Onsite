@@ -14,5 +14,6 @@ urlpatterns = [
     path('', observer_views.load, name='home'),
     path('post_feedback/', observer_views.post_feedback, name='post_feedback'),
     path('project-proposal/', observer_views.project_proposal, name='project-proposal'),
+    path('add-rating/', observer_views.add_rating, name='add-rating'),
 
 ]

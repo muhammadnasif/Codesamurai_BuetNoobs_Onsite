@@ -12,7 +12,7 @@ admin.site.register(User)
 admin.site.register(UserTypes)
 admin.site.register(Component)
 admin.site.register(Feedback)
-
+admin.site.register(Rating)
 # write code to register all 3 constraints
 admin.site.register(Agency_Constraint)
 admin.site.register(Location_Constraint)

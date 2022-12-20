@@ -103,6 +103,7 @@ def project_convert(project):
 
     }
 
+
 @api_view(['GET'])
 def all_projects(request):
     fill_initial_data()
@@ -110,6 +111,7 @@ def all_projects(request):
         approved_project_convert(p) for p in Approved_Project.objects.all()
     ]
     return Response(project_list)
+
 
 def approved_project_convert(approved_project):
     return {
@@ -130,3 +132,19 @@ def approved_project_convert(approved_project):
 
 def project_proposal(request):
     return render(request, 'base/projects.html')
+
+
+@api_view(['POST'])
+def add_rating(request):
+    # print(Project_Core.objects)
+
+    if request.POST:
+        print(request.POST)
+        if 'rating' in request.POST:
+            rating = Rating.objects.create(rating=request.POST['rating'],
+                                           project_core=Project_Core.objects.get(id=request.POST['project_id']))
+            rating.save()
+
+            return Response({'result': 'ok'})
+
+    return Response({'result': 'rating'})
