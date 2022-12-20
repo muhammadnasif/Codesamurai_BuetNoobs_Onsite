@@ -12,5 +12,6 @@ urlpatterns = [
     path('project', observer_views.project, name='project'),
     path('', observer_views.load, name='home'),
     path('issue/', observer_views.post_issue, name='post_issue'),
+    path('project-proposal/', observer_views.project_proposal, name='project-proposal'),
 
 ]
