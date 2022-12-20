@@ -35,7 +35,7 @@ def load(request):
         "projects": projects,
     }
 
-    return render(request, 'base/base.html', context)
+    return render(request, 'base/home.html', context)
 
 
 @api_view(['GET'])
@@ -87,3 +87,7 @@ def project_convert(project):
         'timespan': project.timespan,
         'goal': project.goal,
     }
+
+
+def project_proposal(request):
+    return render(request, 'base/projects.html')

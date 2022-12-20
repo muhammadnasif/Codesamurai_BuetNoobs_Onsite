@@ -1,0 +1,20 @@
+{% extends 'base/base.html' %}
+
+{% block projects %}
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Projects</h1>
+            <ol class="breadcrumb mb-4">
+                <li class="breadcrumb-item active">Add</li>
+            </ol>
+            <input type="hidden" id="location-hidden">
+            {% include 'components/modal.html' %}
+
+
+            {% include 'components/map.html' %} {# {% include 'cards.html' %}#} {# {% include 'charts.html' %}#}
+            {# {% include 'datatable.html' %}#}
+        </div>
+    </main>
+
+{% endblock %}
+
