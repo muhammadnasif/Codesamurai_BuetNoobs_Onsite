@@ -12,7 +12,9 @@ urlpatterns = [
                   path('login/', observer_au.log_in, name='login'),
                   path('logout/', observer_au.logout_request, name='logout'),
                   path('registration/', observer_au.registration, name='register'),
+                  path('utility/', include('utility_engines.urls', namespace='utility')),
                   path('test/', observer_au.test, name='test'),
+
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
