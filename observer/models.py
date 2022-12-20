@@ -102,7 +102,7 @@ class Approved_Project(models.Model):
 
 class Proposed_Project(models.Model):
     project = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
-    proposed_date = models.DateField()
+    proposed_date = models.DateField(auto_now=True)
 
     def __str__(self):
         return self.project.name
