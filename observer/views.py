@@ -86,7 +86,7 @@ def post_feedback(request):
 
     # feedback saved
 
-    return Response({'result': 'ok'})
+    return Response({'status': '1'})
 
 
 def project_convert(project):
@@ -103,6 +103,7 @@ def project_convert(project):
 
     }
 
+
 @api_view(['GET'])
 def all_projects(request):
     fill_initial_data()
@@ -110,6 +111,7 @@ def all_projects(request):
         approved_project_convert(p) for p in Approved_Project.objects.all()
     ]
     return Response(project_list)
+
 
 def approved_project_convert(approved_project):
     return {
@@ -129,4 +131,54 @@ def approved_project_convert(approved_project):
 
 
 def project_proposal(request):
-    return render(request, 'base/projects.html')
+    agency = request.session.get('agency')
+    print(agency)
+    allProposed = Proposed_Project.objects.all()
+    revisedProposed = []
+    for p in allProposed:
+        if p.project.executing_agency.name == agency:
+            newP = {
+                'core_id':p.project.id,
+                'name': p.project.name,
+                'location':[l.name for l in p.project.locations.all()],
+                'cost':p.project.expected_cost,
+                'timespan':p.project.timespan,
+                'goal': p.project.goal,
+                'proposed_date':p.proposed_date
+            }
+            revisedProposed.append(newP)
+    if request.method == 'GET':
+        return render(request, 'base/projects.html', {"context": revisedProposed})
+    else:
+        location = Location(name=request.POST['propose-form-area'])
+        # location.save()
+        agency = Agency.objects.get(name=request.session.get('agency'))
+        name = request.POST['propose-form-name']
+        lat = request.POST['propose-form-lat']
+        long = request.POST['propose-form-long']
+        cost = request.POST['propose-form-cost']
+        goal = request.POST['propose-form-goal']
+        timespan = request.POST['propose-form-timespan']
+        # print(name, lat, long, cost, goal, timespan)
+        project = Project_Core(name=name, executing_agency=agency, latitude=lat, longitude=long, expected_cost=cost, goal=goal, timespan=timespan)
+        # project.save()
+        project.locations.add(location)
+        pp = Proposed_Project(project=project)
+        pp.save()
+        return render(request, 'base/projects.html', {"context": revisedProposed})
+
+
+
+@api_view(['POST'])
+def add_rating(request):
+
+    if request.POST:
+        print(request.POST)
+        if 'rating' in request.POST:
+            rating = Rating.objects.create(rating=request.POST['rating'],
+                                           project_core=Project_Core.objects.get(id=request.POST['project_id']))
+            rating.save()
+
+            return Response({'status': '1'})
+
+    return Response({'msg': 'no data saved'})

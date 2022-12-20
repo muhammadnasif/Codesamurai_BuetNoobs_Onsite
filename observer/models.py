@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class UserTypes(models.Model):
     code = models.CharField(max_length=20)
     committee = models.CharField(max_length=20)
@@ -42,7 +43,7 @@ class User(models.Model):
 
 class Project_Core(models.Model):
     name = models.CharField(max_length=200)
-    project_code = models.CharField(max_length=50)
+    project_code = models.CharField(max_length=50, blank=True)
     locations = models.ManyToManyField(Location)
     executing_agency = models.ForeignKey(Agency, on_delete=models.CASCADE)
     latitude = models.FloatField()
@@ -52,15 +53,22 @@ class Project_Core(models.Model):
     goal = models.TextField()
     is_approved = models.BooleanField(default=False)
 
-
     @property
     def rating(self):
-        if self.feedback_set.count() == 0:
+        if self.rating_set.count() == 0:
             return 0
-        return self.feedback_set.aggregate(models.Avg('rating'))['rating__avg']
+        return self.rating_set.aggregate(models.Avg('rating'))['rating__avg']
 
     def __str__(self):
         return self.name
+
+
+class Rating(models.Model):
+    rating = models.IntegerField()
+    project_core = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return str(self.rating)
 
 
 class Feedback(models.Model):
@@ -86,7 +94,7 @@ class Approved_Project(models.Model):
 
 class Proposed_Project(models.Model):
     project = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
-    proposed_date = models.DateField()
+    proposed_date = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return self.project.name
@@ -99,7 +107,7 @@ class Component(models.Model):
     type = models.CharField(max_length=50)
     dependancy = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
     budget_ratio = models.FloatField()
-    completion = models.FloatField(default = 0) # only meaningful for component of approved set
+    completion = models.FloatField(default=0)  # only meaningful for component of approved set
 
     def __str__(self):
         return self.component_id

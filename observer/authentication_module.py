@@ -18,7 +18,6 @@ def log_in(request):
 
             try:
                 user = User.objects.get(username=u_name)
-                print("13123123")
                 agency = user.agency.name
                 print(agency)
             except:
@@ -71,3 +70,7 @@ def registration(request):
     print("usertype print korchi")
 
     return render(request, 'role_management/registration.html', context)
+
+
+def test(request):
+    return render(request, 'role_management/login-2.html')

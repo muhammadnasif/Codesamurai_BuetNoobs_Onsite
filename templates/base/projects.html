@@ -1,18 +1,69 @@
 {% extends 'base/base.html' %}
+{% load static %}
 
 {% block projects %}
     <main>
         <div class="container-fluid px-4">
-            <h1 class="mt-4">Projects</h1>
+            <h1 class="mt-4">Proposed Projects by the Agency</h1>
             <ol class="breadcrumb mb-4">
                 <li class="breadcrumb-item active">Add</li>
             </ol>
-            <input type="hidden" id="location-hidden">
-            {% include 'components/modal.html' %}
+            <div class="proposal-form">
+                <form method="post" action="{% url 'observer:project-proposal' %}">
+                    {% csrf_token %}
+                    <label for="propose-form-name">Project name:</label><br>
+                    <input type="text" id="propose-form-name" name="propose-form-name"><br>
+
+                    <label for="propose-form-area">Location Area:</label><br>
+                    <input type="text" id="propose-form-area" name="propose-form-area"><br>
+                    <label for="propose-form-lat">Latitude</label><br>
+                    <input type="number" id="propose-form-lat" name="propose-form-lat" step="0.0000001"><br>
+                    <label for="propose-form-long">Longitude</label><br>
+                    <input type="number" id="propose-form-long" name="propose-form-long" step="0.0000001"><br>
 
 
-            {% include 'components/map.html' %} {# {% include 'cards.html' %}#} {# {% include 'charts.html' %}#}
-            {# {% include 'datatable.html' %}#}
+                    <label for="propose-form-cost">Project cost:</label><br>
+                    <input type="number" id="propose-form-cost" name="propose-form-cost"><br>
+
+                    <label for="propose-form-timespan">Project timespan:</label><br>
+                    <input type="number" id="propose-form-timespan" name="propose-form-timespan"><br>
+
+                    <label for="propose-form-goal">Project goal:</label><br>
+                    <input type="textarea" id="propose-form-goal" name="propose-form-goal"><br>
+
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+            <table class="demo-table">
+              <tr class="demo-tr">
+                <th class="demo-tdh">Name</th>
+                  <th class="demo-tdh">Location</th>
+                  <th class="demo-tdh">Cost</th>
+                  <th class="demo-tdh">Timespan</th>
+                  <th class="demo-tdh">Goal</th>
+                  <th class="demo-tdh">Proposed Date</th>
+                  <th class="demo-tdh">Edit Proposal</th>
+              </tr>
+                {% for p in context %}
+                    <tr class="demo-tr">
+                        <td class="demo-tdh">{{ p.name }}</td>
+                        <td class="demo-tdh">
+                            {% for l in p.location %}
+                                {{ l }}
+                            {% endfor %}
+                        </td>
+                        <td class="demo-tdh">{{ p.cost }}</td>
+                        <td class="demo-tdh">{{ p.timespan }}</td>
+                        <td class="demo-tdh">{{ p.goal }}</td>
+                        <td class="demo-tdh">{{ p.proposed_date }}</td>
+                        <td class="demo-tdh">
+                            <input type="hidden" id="core_id" value="{{ p.core_id }}">
+                            <button class="btn btn-success btn-proposal-edit" data-core-id="{{ p.core_id }}">Edit</button>
+                        </td>
+                      </tr>
+                {% endfor %}
+            </table>
+
         </div>
     </main>
 
