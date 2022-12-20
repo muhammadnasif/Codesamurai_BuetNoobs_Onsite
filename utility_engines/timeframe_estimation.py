@@ -46,10 +46,13 @@ def suggest_timeframe(project):
         for c in list_components:
             if c['remaining'] <= 0:
                 continue
-            todo = min(c['remaining'], (datetime(tim.year+1, 1, 1) - tim).days/365.25)
             if c['dependancy'] is not None and all_components[c['dependancy']]['remaining'] > 0:
                 # print("COULD NOT WORK ", c['id'], " BECAUSE OF DEPENDENCY ON ", c['dependancy'])
                 continue
+            todo = min(c['remaining'], (datetime(tim.year+1, 1, 1) - tim).days/365.25)
+            if c['dependancy'] is not None and all_components[c['dependancy']].get('done', 0) > 0:
+                todo -= all_components[c['dependancy']].get('done', 0)
+            
             if agencies[c['agency']]['usage'] + 1 > agencies[c['agency']]['max_limit']:
                 # print('COULD NOT WORK ', c['id'], ' BECAUSE OF AGENCY LIMIT')
                 continue
@@ -60,6 +63,9 @@ def suggest_timeframe(project):
                 # print('COULD NOT WORK ', c['id'], ' BECAUSE OF LOCATION LIMIT')
                 continue
             c['remaining'] -= todo
+
+            c['done'] = todo + (all_components[c['dependancy']].get('done', 0) if c['dependancy'] is not None else 0)
+
             if c['project'] == project.project.id:
                 if timeframe[0] is None:
                     timeframe[0] = tim
@@ -76,6 +82,9 @@ def suggest_timeframe(project):
                     # increment tim by todo years
                     timeframe[1] = tim + timedelta(days=365.25 * todo)
                     break
+        
+        for c in list_components:
+            c['done'] = 0
     
         tim = datetime(tim.year+1, 1, 1)
         if done == required:
