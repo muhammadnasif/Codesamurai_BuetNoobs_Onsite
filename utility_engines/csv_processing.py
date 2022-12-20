@@ -246,14 +246,17 @@ def fill_initial_data():
 
     if Approved_Project.objects.count() == 0:
         projects, locations = read_projects_file(settings.BASE_DIR / 'Dataset/projects.csv')
+        project_mapping = {}
 
         for location in locations:
             if not Location.objects.filter(name=location).exists():
                 l = Location.objects.create(name=location)
                 l.save()
+        
 
         for project in projects:
             # create project core
+            project_mapping[project['project_id']] = project
             core = Project_Core.objects.create(
                 name=project['name'],
                 project_code = project['project_id'],
@@ -274,7 +277,6 @@ def fill_initial_data():
             p = Approved_Project.objects.create(
                 project=core,
                 start_date=project['start_date'],
-                completion=project['completion'],
                 actual_cost=int(project['actual_cost'])
             )
 
@@ -319,15 +321,18 @@ def fill_initial_data():
         print("FILLING PROPOSALS")
 
     if Component.objects.all().count() == 0:
+        assert project_mapping is not None
         components = read_component_file(settings.BASE_DIR / 'Dataset/components.csv')
         for component in components:
+            p = Project_Core.objects.get(project_code=component['project_id'])
             c = Component.objects.create(
-                project = Project_Core.objects.get(project_code=component['project_id']),
+                project = p,
                 executing_agency=Agency.objects.get(code=component['executing_agency']),
                 component_id=component['component_id'],
                 type=component['component_type'],
                 dependancy=None,
-                budget_ratio=component['budget_ratio']
+                budget_ratio=component['budget_ratio'],
+                completion = (project_mapping[p.project_code]['completion'] if p.is_approved else 0)
             )
             c.save()
 
@@ -344,7 +349,6 @@ def fill_initial_data():
         constraints = read_constraint_file(settings.BASE_DIR / 'Dataset/constraints.csv')
         for constraint in constraints:
             if constraint['constraint_type'] == 'location_limit':
-                print(constraint)
                 c = Location_Constraint.objects.create(
                     location=Location.objects.get(name=constraint['code']),
                     max_limit=constraint['max_limit']

@@ -3,22 +3,24 @@ $('.submit-issue').click(function (e) {
     e.preventDefault();
 
     console.log("issue submitted");
-    let issue_msg = document.getElementById('form-issue').value;
+    let feedback_msg = document.getElementById('form-issue').value;
     document.getElementById('form-issue').value = '';
-    let coord = document.getElementById('location-hidden').value;
-    document.getElementById('location-hidden').value=''
+    let project_id = document.getElementById('location-hidden').value;
+    document.getElementById('location-hidden').value = ''
 
     let csrf_token = $('input[name="csrfmiddlewaretoken"]').val();
 
     mydata = {
-        issue_msg: issue_msg,
-        coord: coord,
+        feedback_msg: feedback_msg,
         csrfmiddlewaretoken: csrf_token,
+        project_id: project_id
     }
+
+    console.log(mydata);
 
     $.ajax(
         {
-            url: "issue/",
+            url: "post_feedback/",
             method: 'POST',
             data: mydata,
             success: function (data) {
@@ -31,3 +33,4 @@ $('.submit-issue').click(function (e) {
     )
 
 })
+

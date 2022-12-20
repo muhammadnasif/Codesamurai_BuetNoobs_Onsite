@@ -1,6 +1,5 @@
 from django.db import models
 
-
 class UserTypes(models.Model):
     code = models.CharField(max_length=20)
     committee = models.CharField(max_length=20)
@@ -12,6 +11,8 @@ class UserTypes(models.Model):
 
 class Location(models.Model):
     name = models.CharField(max_length=200)
+    last_usage_updated = models.DateField(auto_now_add=True)
+    usage = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -22,6 +23,9 @@ class Agency(models.Model):
     code = models.CharField(max_length=50, default="")
     type = models.CharField(max_length=50)  # either EXEC or APPROV
     description = models.TextField()
+    last_usage_updated = models.DateField(auto_now_add=True)
+    budget_used = models.IntegerField(default=0)
+    usage = models.IntegerField(default=0)
 
     def __str__(self):
         return self.name
@@ -48,6 +52,13 @@ class Project_Core(models.Model):
     goal = models.TextField()
     is_approved = models.BooleanField(default=False)
 
+
+    @property
+    def rating(self):
+        if self.feedback_set.count() == 0:
+            return 0
+        return self.feedback_set.aggregate(models.Avg('rating'))['rating__avg']
+
     def __str__(self):
         return self.name
 
@@ -56,15 +67,21 @@ class Feedback(models.Model):
     feedback = models.CharField(max_length=200)
     project_core = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return self.project_core.name + " -- " + self.feedback
+
 
 class Approved_Project(models.Model):
     project = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
     start_date = models.DateField()
-    completion = models.FloatField()
     actual_cost = models.IntegerField()
 
     def __str__(self):
         return self.project.name
+
+    @property
+    def completion(self):
+        return self.project.component_set.aggregate(models.Avg('completion'))['completion__avg']
 
 
 class Proposed_Project(models.Model):
@@ -82,6 +99,7 @@ class Component(models.Model):
     type = models.CharField(max_length=50)
     dependancy = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
     budget_ratio = models.FloatField()
+    completion = models.FloatField(default = 0) # only meaningful for component of approved set
 
     def __str__(self):
         return self.component_id

@@ -18,7 +18,6 @@ def log_in(request):
 
             try:
                 user = User.objects.get(username=u_name)
-                print('Got the User')
                 agency = user.agency.name
                 print(agency)
             except:
@@ -32,9 +31,9 @@ def log_in(request):
     return render(request, 'role_management/login.html')
 
 
-def create_session(request, username, role):
+def create_session(request, username, agency):
     request.session['username'] = username
-    request.session['agency'] = role
+    request.session['agency'] = agency
 
 
 def delete_session(request):
