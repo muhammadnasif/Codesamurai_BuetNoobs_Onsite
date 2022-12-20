@@ -1,44 +1,5 @@
 from django.db import models
 
-
-# Create your models here.
-
-# class Agency(models.Model):
-#     name = models.CharField(max_length = 200)
-
-#     def __str__(self):
-#         return self.name
-
-# class Project(models.Model):
-#     name = models.CharField(max_length = 200)
-#     category = models.CharField(max_length = 50)
-#     description = models.TextField()
-#     start_time = models.DateField()
-#     completion_time = models.DateField()
-#     total_budget = models.IntegerField()
-#     completion_percentage = models.FloatField()
-#     affiliated_agencies = models.ManyToManyField(Agency)
-
-#     def __str__(self):
-#         return self.name
-
-# class Location(models.Model):
-#     longitude = models.FloatField()
-#     latitude = models.FloatField()
-#     project = models.ForeignKey(Project, on_delete = models.CASCADE)
-
-#     def __str__(self):
-#         return f'({self.longitude}, {self.latitude})'
-
-# class Issue(models.Model):
-#     location = models.ForeignKey(Location, on_delete = models.CASCADE)
-#     description = models.TextField()
-#     sender = models.CharField(max_length = 200, default="Nasif")   # TODO make user?
-
-#     def __str__(self):
-#         return self.description
-
-
 class UserTypes(models.Model):
     code = models.CharField(max_length=20)
     committee = models.CharField(max_length=20)
@@ -114,8 +75,28 @@ class Component(models.Model):
     component_id = models.CharField(max_length=50, unique=True)
     type = models.CharField(max_length=50)
     dependancy = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
+    budget_ratio = models.FloatField()
 
     def __str__(self):
         return self.component_id
 
-# todo constraints
+class Agency_Constraint(models.Model):
+    agency = models.ForeignKey(Agency, on_delete=models.CASCADE)
+    max_limit = models.IntegerField()
+
+    def __str__(self):
+        return self.agency.name + " - " + str(self.max_limit)
+
+class Location_Constraint(models.Model):
+    location = models.ForeignKey(Location, on_delete=models.CASCADE)
+    max_limit = models.IntegerField()
+
+    def __str__(self):
+        return self.location.name + " - " + str(self.max_limit)
+
+class Yearly_Funding_Constraint(models.Model):
+    agency = models.ForeignKey(Agency, on_delete=models.CASCADE)
+    max_funding = models.IntegerField()
+
+    def __str__(self):
+        return self.agency.name + " - " + str(self.max_funding) + "$"
