@@ -11,5 +11,6 @@ urlpatterns = [
     path('api/projects/filter', observer_views.filter_projects, name='filter_projects'),
     path('project', observer_views.project, name='project'),
     path('', observer_views.load, name='home'),
-    path('issue/<int:pk>/', observer_views.post_issue, name='post_issue')
+    path('issue/', observer_views.post_issue, name='post_issue'),
+
 ]

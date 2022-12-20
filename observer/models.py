@@ -32,7 +32,7 @@ class Location(models.Model):
 class Issue(models.Model):
     location = models.ForeignKey(Location, on_delete = models.CASCADE)
     description = models.TextField()
-    sender = models.CharField(max_length = 200)   # TODO make user?
+    sender = models.CharField(max_length = 200, default="Nasif")   # TODO make user?
 
     def __str__(self):
         return self.description
