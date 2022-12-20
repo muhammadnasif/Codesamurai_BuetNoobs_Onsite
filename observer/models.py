@@ -114,6 +114,7 @@ class Component(models.Model):
     component_id = models.CharField(max_length=50, unique=True)
     type = models.CharField(max_length=50)
     dependancy = models.ForeignKey('self', on_delete=models.SET_NULL, null=True)
+    budget_ratio = models.FloatField()
 
     def __str__(self):
         return self.component_id
