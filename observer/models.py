@@ -9,15 +9,6 @@ class UserTypes(models.Model):
         return self.code
 
 
-class User(models.Model):
-    username = models.CharField(max_length=20)
-    password = models.CharField(max_length=50)
-    userType = models.ForeignKey(UserTypes, on_delete=models.CASCADE)
-
-    def __str__(self):
-        return self.username + " " + str(self.username)
-
-
 class Location(models.Model):
     name = models.CharField(max_length=200)
 
@@ -34,6 +25,14 @@ class Agency(models.Model):
     def __str__(self):
         return self.name
 
+
+class User(models.Model):
+    username = models.CharField(max_length=20)
+    password = models.CharField(max_length=50)
+    agency = models.ForeignKey(Agency, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.username + " " + str(self.username)
 
 class Project_Core(models.Model):
     name = models.CharField(max_length=200)

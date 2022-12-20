@@ -48,7 +48,7 @@ def logout_request(request):
 
 
 def registration(request):
-    userTypes = UserTypes.objects.all()
+    userTypes = Agency.objects.all()
 
     context = {
         'userTypes': userTypes,
