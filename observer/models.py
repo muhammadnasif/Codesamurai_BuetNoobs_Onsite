@@ -83,6 +83,7 @@ class Approved_Project(models.Model):
     project = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
     start_date = models.DateField()
     actual_cost = models.IntegerField()
+    expected_end = models.DateField(null=True)
 
     def __str__(self):
         return self.project.name
