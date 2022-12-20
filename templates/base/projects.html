@@ -9,9 +9,18 @@
                 <li class="breadcrumb-item active">Add</li>
             </ol>
             <div class="proposal-form">
-                <form>
+                <form method="post" action="{% url 'observer:project-proposal' %}">
+                    {% csrf_token %}
                     <label for="propose-form-name">Project name:</label><br>
                     <input type="text" id="propose-form-name" name="propose-form-name"><br>
+
+                    <label for="propose-form-area">Location Area:</label><br>
+                    <input type="text" id="propose-form-area" name="propose-form-area"><br>
+                    <label for="propose-form-lat">Latitude</label><br>
+                    <input type="number" id="propose-form-lat" name="propose-form-lat" step="0.0000001"><br>
+                    <label for="propose-form-long">Longitude</label><br>
+                    <input type="number" id="propose-form-long" name="propose-form-long" step="0.0000001"><br>
+
 
                     <label for="propose-form-cost">Project cost:</label><br>
                     <input type="number" id="propose-form-cost" name="propose-form-cost"><br>
@@ -21,6 +30,8 @@
 
                     <label for="propose-form-goal">Project goal:</label><br>
                     <input type="textarea" id="propose-form-goal" name="propose-form-goal"><br>
+
+                    <button type="submit">Submit</button>
                 </form>
             </div>
             <table class="demo-table">
