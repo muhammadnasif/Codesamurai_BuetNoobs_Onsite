@@ -1,0 +1,46 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/leaflet_map.css' %}">
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+      integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+      crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+        integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+        crossorigin=""></script>
+<script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.js"></script>
+
+
+<div id="map">
+</div>
+
+<div class="d-flex justify-content-end">
+    <div class="dropdown ms-auto">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown"
+                aria-expanded="false">
+            Category
+        </button>
+        <ul class="dropdown-menu" id="category-dropdown">
+
+            {% for project in projects %}
+                <li>
+                    <div class="form-check">
+                        {#                                        <input class="form-check-input" onchange="filter_map_marker({{ project.category }})" type="checkbox" value="{{ project.category }}" id="flexCheckDefault">#}
+                        <input class="form-check-input marker-filter" type="checkbox"
+                               value="{{ project.category }}" id="{{ project.category }}">
+                        <label class="form-check-label" for="{{ project.category }}">
+                            {{ project.category }}
+                        </label>
+                    </div>
+                </li>
+            {% endfor %}
+
+
+        </ul>
+    </div>
+</div>
+
+<script src="{% static 'js/map.js' %}"></script>
+
+
+{# leaflet js  #}
