@@ -8,12 +8,10 @@ from .models import *
 #     for project in project_list:
 #         agencies += project['affiliated_agency']
 #     agencies = set(agencies)
-
 #     for agency in agencies:
 #         a = Agency.objects.create(name=agency)
 #         # print(a)
 #         a.save()
-
 #     for project in project_list:
 #         p = Project.objects.create(
 #             name=project['project_name'],

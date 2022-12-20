@@ -27,7 +27,9 @@ from utility_engines.csv_processing import fill_initial_data
 
 def load(request):
     # Displaying distinct categories
-    projects = [] #Project.objects.values('category').distinct()
+    # projects = Project.objects.values('category').distinct()
+
+    projects = []
 
     context = {
         "projects": projects,
@@ -39,10 +41,7 @@ def load(request):
 @api_view(['GET'])
 def projects(request):
     fill_initial_data()
-    read_data()
-    project_list = [
-        # project_convert(p) for p in Project.objects.all()
-    ]
+    project_list = read_data()
     return Response(project_list)
 
 

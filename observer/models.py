@@ -67,7 +67,7 @@ class Location(models.Model):
 
 class Agency(models.Model):
     name = models.CharField(max_length=200)
-    code = models.CharField(max_length=50)
+    code = models.CharField(max_length=50, default="")
     type = models.CharField(max_length=50)
     description = models.TextField()
 
