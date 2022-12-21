@@ -25,7 +25,7 @@ class Agency(models.Model):
     type = models.CharField(max_length=50)  # either EXEC or APPROV
     description = models.TextField()
     last_usage_updated = models.DateField(auto_now_add=True)
-    budget_used = models.IntegerField(default=0)
+    budget_used = models.BigIntegerField(default=0)
     usage = models.IntegerField(default=0)
 
     def __str__(self):
@@ -48,7 +48,7 @@ class Project_Core(models.Model):
     executing_agency = models.ForeignKey(Agency, on_delete=models.CASCADE)
     latitude = models.FloatField()
     longitude = models.FloatField()
-    expected_cost = models.IntegerField()
+    expected_cost = models.BigIntegerField()
     timespan = models.IntegerField()  # years
     goal = models.TextField()
     is_approved = models.BooleanField(default=False)
@@ -82,7 +82,7 @@ class Feedback(models.Model):
 class Approved_Project(models.Model):
     project = models.ForeignKey(Project_Core, on_delete=models.CASCADE)
     start_date = models.DateField()
-    actual_cost = models.IntegerField()
+    actual_cost = models.BigIntegerField()
     expected_end = models.DateField(null=True)
 
     def __str__(self):
@@ -132,7 +132,7 @@ class Location_Constraint(models.Model):
 
 class Yearly_Funding_Constraint(models.Model):
     agency = models.ForeignKey(Agency, on_delete=models.CASCADE)
-    max_funding = models.IntegerField()
+    max_funding = models.BigIntegerField()
 
     def __str__(self):
         return self.agency.name + " - " + str(self.max_funding) + "$"
