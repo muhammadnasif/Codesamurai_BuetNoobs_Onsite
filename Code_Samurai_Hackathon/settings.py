@@ -27,7 +27,7 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-CSRF_TRUSTED_ORIGINS = ['https://buetnoobs.up.railway.app']
+CSRF_TRUSTED_ORIGINS = ['buet-noobs-hackathon.up.railway.app']
 
 # Application definition
 
