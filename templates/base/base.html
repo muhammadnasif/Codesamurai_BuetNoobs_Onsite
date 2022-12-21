@@ -36,6 +36,11 @@
         {% block export_data %}
         {% endblock %}
 
+        {% block export_data_proposed %}
+        {% endblock %}
+
+        {% block notFound %}
+        {% endblock %}
 
         <div>
             {% include 'components/toast-message-success.html' %}
@@ -64,6 +69,7 @@
 <script src="{% static 'js/datatables-simple-demo.js' %}"></script>
 <script src="{% static 'js/project-issue.js' %}"></script>
 <script src="{% static 'js/proposed_project.js' %}"></script>
+<script src="{% static 'js/csv-extractor.js' %}"></script>
 </body>
 
 </html>

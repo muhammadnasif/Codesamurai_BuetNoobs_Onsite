@@ -23,6 +23,9 @@ urlpatterns = [
     path('running-project/', review_view.running_project, name='running-project'),
     path('running-project/<int:pk>/', review_view.detail_running_project, name='detail-running-project'),
 
-    path('export-data/',observer_views.export_data, name='export-data'),
-    path('export-data-search/',observer_views.export_data_search, name='export-data-search'),
+    path('export-data/', observer_views.export_data, name='export-data'),
+    path('export-data-search/', observer_views.export_data_search, name='export-data-search'),
+    path('test/', observer_views.test_func, name='test'),
+    path('404/', observer_views.load_not_found, name='404'),
+    # path('export-data/export-csv/', observer_views.csv_extractor, name='csv-extractor'),
 ]

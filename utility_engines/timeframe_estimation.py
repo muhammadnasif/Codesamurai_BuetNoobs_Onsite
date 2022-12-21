@@ -1,6 +1,7 @@
 from observer.models import *
 from datetime import datetime, timedelta
 import math
+import copy
 
 def suggest_timeframe(project):
     components = Component.objects.filter(project__is_approved=True, completion__lt=100)
@@ -14,7 +15,153 @@ def suggest_timeframe(project):
     all_components = {c['id']: c for c in list_components}
 
     required = len(project_components)
-    done = 0
+
+    agencies = Agency.objects.all()
+    agencies = {
+        a.id:{
+            'id': a.id,
+            'budget_used': a.budget_used if a.last_usage_updated.year == datetime.now().year else 0,
+            'usage' : a.usage if a.last_usage_updated.year == datetime.now().year else 0,
+            'max_limit': a.agency_constraint_set.all()[0].max_limit if a.agency_constraint_set.count() > 0 else 1000000,
+            'max_funding': a.yearly_funding_constraint_set.all()[0].max_funding if a.yearly_funding_constraint_set.count() > 0 else 10000000000000000000000,
+        }
+        for a in agencies
+    }
+
+    locations = Location.objects.all()
+    locations = {
+        l.id: {
+            'id': l.id,
+            'usage': l.usage if l.last_usage_updated.year == datetime.now().year else 0,
+            'max_limit': l.location_constraint_set.all()[0].max_limit if l.location_constraint_set.count() > 0 else 1000000,
+        } for l in locations
+    }
+
+    if check_cycle(all_components):
+        return None
+    
+    return simulate(list_components, all_components, project, required, agencies, locations)
+
+def suggest_timeframe_forall(projects):
+    result = {}
+    
+    components = Component.objects.filter(project__is_approved=True, completion__lt=100)
+
+    components = [convert_approved_component(c) for c in components]
+    components.sort(key=lambda c: c['start_date'])
+
+    agencies = Agency.objects.all()
+    agencies = {
+        a.id:{
+            'id': a.id,
+            'budget_used': a.budget_used if a.last_usage_updated.year == datetime.now().year else 0,
+            'usage' : a.usage if a.last_usage_updated.year == datetime.now().year else 0,
+            'max_limit': a.agency_constraint_set.all()[0].max_limit if a.agency_constraint_set.count() > 0 else 1000000,
+            'max_funding': a.yearly_funding_constraint_set.all()[0].max_funding if a.yearly_funding_constraint_set.count() > 0 else 10000000000000000000000,
+        }
+        for a in agencies
+    }
+
+    locations = Location.objects.all()
+    locations = {
+        l.id: {
+            'id': l.id,
+            'usage': l.usage if l.last_usage_updated.year == datetime.now().year else 0,
+            'max_limit': l.location_constraint_set.all()[0].max_limit if l.location_constraint_set.count() > 0 else 1000000,
+        } for l in locations
+    }
+
+    for p in projects:
+        project_components = [convert_proposed_component(c) for c in p.project.component_set.all()]
+
+        list_components = components + project_components
+        all_components = {c['id']: c for c in list_components}
+
+        required = len(project_components)
+
+        if check_cycle(all_components):
+            result[p.project.id] = {
+                'cycle' : True,
+                'start' : None,
+                'end' : None
+            }
+        else:
+        
+            res = simulate(copy.deepcopy(list_components), copy.deepcopy(all_components), p, copy.deepcopy(required), copy.deepcopy(agencies), copy.deepcopy(locations))
+
+            result[p.project.id] = {
+                'cycle' : False,
+                'start' : res[0],
+                'end' : res[1]
+            }
+
+    
+    return result
+        
+
+def convert_approved_component(c):
+    return {
+        'project' : c.project.id,
+        'start_date' : c.project.approved_project_set.all()[0].start_date,
+        'agency' : c.executing_agency.id,
+        'id': c.id,
+        'dependancy': c.dependancy.id if c.dependancy else None,
+        'budget': c.budget_ratio * (c.project.expected_cost - c.project.approved_project_set.all()[0].actual_cost),
+        'remaining': c.project.timespan * (100 - c.completion)/100,
+        'locations': [l.id for l in c.project.locations.all()],
+        'timespan': c.project.timespan,
+
+    }
+
+def convert_proposed_component(c):
+    return {
+        'project' : c.project.id,
+        'agency' : c.executing_agency.id,
+        'id': c.id,
+        'dependancy': c.dependancy.id if c.dependancy else None,
+        'budget': c.budget_ratio * (c.project.expected_cost),
+        'remaining': c.project.timespan,
+        'locations': [l.id for l in c.project.locations.all()],
+        'timespan': c.project.timespan,
+    }
+
+
+def check_cycle(all_components):
+    seen = {}
+    cycle = False
+    for c in all_components.values():
+        cur = c
+        
+        while cur is not None:
+            if seen.get(cur['id'], -1) == c['id']:
+                cycle = True
+                break
+            if seen.get(cur['id'], -1) != -1:
+                break
+            seen[cur['id']] = c['id']
+            cur = all_components.get(cur['dependancy'])
+        if cycle:
+            break
+
+    if cycle:
+        return True
+    else:
+        return False
+
+def compute_expected_ends_detailed(project):
+    projects = {}
+    components = Component.objects.filter(project__is_approved=True, completion__lt=100)
+
+    new_components = [convert_proposed_component(c) for c in project.project.component_set.all()]
+    components = [convert_approved_component(c) for c in components]
+    components.sort(key=lambda c: c['start_date'])
+
+    components = components + new_components
+
+    all_components = {c['id']: c for c in components}
+    
+    for c in components:
+        projects[c['project']] = projects.get(c['project'], 0) + 1
 
     if check_cycle(all_components):
         return None
@@ -39,6 +186,55 @@ def suggest_timeframe(project):
             'max_limit': l.location_constraint_set.all()[0].max_limit if l.location_constraint_set.count() > 0 else 1000000,
         } for l in locations
     }
+    
+
+    return full_simulate(components, all_components, agencies, locations, projects)
+
+
+def compute_expected_ends():
+    projects = {}
+    components = Component.objects.filter(project__is_approved=True, completion__lt=100)
+
+    components = [convert_approved_component(c) for c in components]
+    components.sort(key=lambda c: c['start_date'])
+
+    all_components = {c['id']: c for c in components}
+    
+
+    for c in components:
+        projects[c['project']] = projects.get(c['project'], 0) + 1
+
+    if check_cycle(all_components):
+        return None
+    
+    agencies = Agency.objects.all()
+    agencies = {
+        a.id:{
+            'id': a.id,
+            'budget_used': a.budget_used if a.last_usage_updated.year == datetime.now().year else 0,
+            'usage' : a.usage if a.last_usage_updated.year == datetime.now().year else 0,
+            'max_limit': a.agency_constraint_set.all()[0].max_limit if a.agency_constraint_set.count() > 0 else 1000000,
+            'max_funding': a.yearly_funding_constraint_set.all()[0].max_funding if a.yearly_funding_constraint_set.count() > 0 else 10000000000000000000000,
+        }
+        for a in agencies
+    }
+    
+    locations = Location.objects.all()
+    locations = {
+        l.id: {
+            'id': l.id,
+            'usage': l.usage if l.last_usage_updated.year == datetime.now().year else 0,
+            'max_limit': l.location_constraint_set.all()[0].max_limit if l.location_constraint_set.count() > 0 else 1000000,
+        } for l in locations
+    }
+    
+
+    return full_simulate(components, all_components, agencies, locations, projects)
+
+
+
+def simulate(list_components, all_components, project, required, agencies, locations):
+    done = 0
 
     timeframe = [None, None]
     tim = datetime.now()
@@ -101,92 +297,8 @@ def suggest_timeframe(project):
 
     return timeframe
 
-def convert_approved_component(c):
-    return {
-        'project' : c.project.id,
-        'start_date' : c.project.approved_project_set.all()[0].start_date,
-        'agency' : c.executing_agency.id,
-        'id': c.id,
-        'dependancy': c.dependancy.id if c.dependancy else None,
-        'budget': c.budget_ratio * (c.project.expected_cost - c.project.approved_project_set.all()[0].actual_cost),
-        'remaining': c.project.timespan * (100 - c.completion)/100,
-        'locations': [l.id for l in c.project.locations.all()],
-        'timespan': c.project.timespan,
 
-    }
-
-def convert_proposed_component(c):
-    return {
-        'project' : c.project.id,
-        'agency' : c.executing_agency.id,
-        'id': c.id,
-        'dependancy': c.dependancy.id if c.dependancy else None,
-        'budget': c.budget_ratio * (c.project.expected_cost),
-        'remaining': c.project.timespan,
-        'locations': [l.id for l in c.project.locations.all()],
-        'timespan': c.project.timespan,
-    }
-
-
-def check_cycle(all_components):
-    seen = {}
-    cycle = False
-    for c in all_components.values():
-        cur = c
-        
-        while cur is not None:
-            if seen.get(cur['id'], -1) == c['id']:
-                cycle = True
-                break
-            if seen.get(cur['id'], -1) != -1:
-                break
-            seen[cur['id']] = c['id']
-            cur = all_components.get(cur['dependancy'])
-        if cycle:
-            break
-
-    if cycle:
-        return True
-    else:
-        return False
-
-
-def compute_expected_ends():
-    components = Component.objects.filter(project__is_approved=True, completion__lt=100)
-
-    components = [convert_approved_component(c) for c in components]
-    components.sort(key=lambda c: c['start_date'])
-
-    all_components = {c['id']: c for c in components}
-    projects = {}
-
-    for c in components:
-        projects[c['project']] = projects.get(c['project'], 0) + 1
-
-    if check_cycle(all_components):
-        return None
-    
-    agencies = Agency.objects.all()
-    agencies = {
-        a.id:{
-            'id': a.id,
-            'budget_used': a.budget_used if a.last_usage_updated.year == datetime.now().year else 0,
-            'usage' : a.usage if a.last_usage_updated.year == datetime.now().year else 0,
-            'max_limit': a.agency_constraint_set.all()[0].max_limit if a.agency_constraint_set.count() > 0 else 1000000,
-            'max_funding': a.yearly_funding_constraint_set.all()[0].max_funding if a.yearly_funding_constraint_set.count() > 0 else 10000000000000000000000,
-        }
-        for a in agencies
-    }
-    
-    locations = Location.objects.all()
-    locations = {
-        l.id: {
-            'id': l.id,
-            'usage': l.usage if l.last_usage_updated.year == datetime.now().year else 0,
-            'max_limit': l.location_constraint_set.all()[0].max_limit if l.location_constraint_set.count() > 0 else 1000000,
-        } for l in locations
-    }
-
+def full_simulate(components, all_components, agencies, locations, projects):
     tim = datetime.now()
     ends = {}
     done = 0

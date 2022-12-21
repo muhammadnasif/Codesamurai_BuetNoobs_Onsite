@@ -1,6 +1,6 @@
 {% extends 'base/base.html' %}
 
-{% block export_data %}
+{% block export_data_proposed %}
     <main>
         <div class="container-fluid px-4">
             <h1 class="mt-4">Export Data</h1>
@@ -15,33 +15,39 @@
             </div>
 
             <div class=" d-flex justify-content-end">
-                <button class="btn btn-outline-primary export-csv"> Export (CSV)</button>
+                <button class="btn btn-outline-primary"> Print</button>
             </div>
 
             <table class="table table-striped table-hover">
                 <thead>
                 <th>Project Name</th>
-                <th>Start Date</th>
-                <th>Time Span(year)</th>
+                <th>Proposed Date</th>
+                <th>Expected Start</th>
+                <th>Expected End</th>
+                <th>Agency</th>
                 <th>Expected Cost</th>
                 <th>Goal</th>
+                <th>Time Span</th>
                 </thead>
-                <tbody>
                 {% for project in projects %}
                     <tr>
                         <td>{{ project.project.name }}</td>
-                        <td>{{ project.start_date }}</td>
-                        <td>{{ project.project.timespan }}</td>
-                        <td>{{ project.expected_end }}</td>
+                        <td>{{ project.proposed_date }}</td>
+                        <td>{{ project.estimation.start }}</td>
+                        <td>{{ project.estimation.end }}</td>
+                        <td>{{ project.project.executing_agency.name }}</td>
                         <td>{{ project.project.expected_cost }}</td>
                         <td>{{ project.project.goal }}</td>
+                        <td>{{ project.project.timespan }}</td>
                     </tr>
                 {% endfor %}
+
+                <tbody>
+
                 </tbody>
             </table>
 
 
         </div>
     </main>
-
 {% endblock %}
