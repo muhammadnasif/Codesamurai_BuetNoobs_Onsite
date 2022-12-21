@@ -8,7 +8,36 @@ from .models import *
 
 
 def review_project_proposal(request):
-    return render(request, 'components/review_proposal.html')
+    allProposed = Proposed_Project.objects.all()
+    revisedProposed = []
+    for p in allProposed:
+            newP = {
+                'core_id': p.project.id,
+                'name': p.project.name,
+                'location': [l.name for l in p.project.locations.all()],
+                'cost': p.project.expected_cost,
+                'timespan': p.project.timespan,
+                'goal': p.project.goal,
+                'proposed_date': p.proposed_date
+            }
+            revisedProposed.append(newP)
+    return render(request, 'components/review_proposal.html', {"context": revisedProposed})
 
 def running_project(request):
-    return render(request, 'components/running_project.html')
+    allApproved= Approved_Project.objects.all()
+    revisedApproved = []
+    for p in allApproved:
+            newP = {
+                'core_id': p.project.id,
+                'name': p.project.name,
+                'location': [l.name for l in p.project.locations.all()],
+                'cost': p.project.expected_cost,
+                'timespan': p.project.timespan,
+                'goal': p.project.goal,
+                'start_date': p.start_date,
+                'actual_cost': p.actual_cost,
+                'expected_end': p.expected_end
+
+            }
+            revisedApproved.append(newP)
+    return render(request, 'components/running_project.html', {"context": revisedApproved})
