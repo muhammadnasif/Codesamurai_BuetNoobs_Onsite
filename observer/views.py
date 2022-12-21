@@ -1,7 +1,10 @@
 from django.shortcuts import render, redirect
+from django.urls import reverse
 from djqscsv import render_to_csv_response, write_csv
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
+
+from utility_engines.timeframe_estimation import suggest_timeframe_forall
 from .models import *
 from .csv_tool import read_data
 from .models import *
@@ -30,21 +33,23 @@ def load(request):
     # projects = Project.objects.values('category').distinct()
 
     projects = []
-    if 'agency' in request.session and Agency.objects.get(name=request.session.get('agency')) == 'EXEC':
-        exec = True
-    else:
-        exec = False
+
+    if 'username' not in request.session:
+        return redirect(reverse('login'))
 
     context = {
         "projects": projects,
-        "agency": None, #Agency.objects.get(name=request.session.get('agency')),
+        # "agency": None,  # Agency.objects.get(name=request.session.get('agency')),
         "user": request.session.get('username'),
-        "exec": exec,
+        # "exec": exec,
     }
     print(request.session)
 
     return render(request, 'base/home.html', context)
 
+
+def load_not_found(request):
+    return render(request, 'base/404.html')
 
 @api_view(['GET'])
 def projects(request):
@@ -73,15 +78,6 @@ def project(request):
 
 @api_view(['POST'])
 def post_feedback(request):
-    # id = request.POST['coord']
-    # location = Location.objects.get(id=id)
-
-    # # print(request.POST['coord'])
-    # # latlong = request.POST['coord'].split(',')
-    # # location = Location.objects.get(longitude=latlong[0], latitude=latlong[1])
-    # # print(location)
-    # issue = Issue.objects.create(location=location, description=request.POST['issue_msg'])
-    # issue.save()
 
     project_id = request.POST['project_id']
     feedback_msg = request.POST['feedback_msg']
@@ -90,8 +86,6 @@ def post_feedback(request):
 
     feedback = Feedback.objects.create(project_core=project, feedback=feedback_msg)
     feedback.save()
-
-    # feedback saved
 
     return Response({'status': '1'})
 
@@ -138,6 +132,10 @@ def approved_project_convert(approved_project):
 
 
 def project_proposal(request):
+
+    if 'username' not in request.session:
+        return redirect(reverse('login'))
+
     agency = request.session.get('agency')
     print(agency)
     allProposed = Proposed_Project.objects.all()
@@ -155,8 +153,8 @@ def project_proposal(request):
             }
             revisedProposed.append(newP)
     if request.method == 'GET':
-        return render(request, 'base/projects.html', {"context": revisedProposed, 'data' : {
-            'name' : '',
+        return render(request, 'base/projects.html', {"context": revisedProposed, 'data': {
+            'name': '',
             'area': '',
             'lat': '',
             'long': '',
@@ -195,8 +193,9 @@ def project_proposal(request):
 
             project.save()
         else:
-            project = Project_Core.objects.create(name=name, executing_agency=agency, latitude=lat, longitude=long, expected_cost=cost,
-                               goal=goal, timespan=timespan)
+            project = Project_Core.objects.create(name=name, executing_agency=agency, latitude=lat, longitude=long,
+                                                  expected_cost=cost,
+                                                  goal=goal, timespan=timespan)
             project.save()
             project.locations.add(location)
             pp = Proposed_Project.objects.create(project=project)
@@ -225,7 +224,7 @@ def proposal_update_form(request, pk):
     revisedProposed = getRevisedProposed(request.session.get('agency'))
     proposed_project = Proposed_Project.objects.get(project__id=pk)
     proposed_project = {
-        'name' : proposed_project.project.name,
+        'name': proposed_project.project.name,
         'area': proposed_project.project.locations.all()[0].name,
         'lat': proposed_project.project.latitude,
         'long': proposed_project.project.longitude,
@@ -284,19 +283,51 @@ def export_data(request):
     return render(request, 'base/export_data.html')
 
 
+def csv_file_creator(request):
+    if 'is_approved' in request.session:
+        projects = Approved_Project.objects.filter(project__name__icontains=request.session['query_param'])
+    else:
+        projects = Proposed_Project.objects.filter(project__name__icontains=request.session['query_param'])
+    with open('foo.csv', 'wb') as csv_file:
+        print("csv file open -- foo")
+        write_csv(projects, csv_file)
+        print("csv file write -- foo")
+
 def export_data_search(request):
     print("export_data_search paisi")
     print(request.POST)
     if 'is_approved' in request.POST:
+
+        request.session['is_approved'] = request.POST['is_approved']
+        request.session['query_param'] = request.POST['search']
+
         approved_projects = Approved_Project.objects.filter(project__name__icontains=request.POST['search'])
         context = {
             'projects': approved_projects
         }
     else:
+        request.session['query_param'] = request.POST['search']
+
         proposed_projects = Proposed_Project.objects.filter(project__name__icontains=request.POST['search'])
+
+        estimator_dict = suggest_timeframe_forall(proposed_projects)
+        x = []
+        print(estimator_dict)
+        for p in proposed_projects:
+            print(estimator_dict[p.project.id])
+            x = [
+                {
+                    'project': p.project,
+                    'estimation': estimator_dict[p.project.id]
+                },
+            ]
+
+        print(x)
+
         context = {
             'projects': proposed_projects
         }
+        return render(request, 'export_data_proposed.html', context)
     print(context)
     return render(request, 'base/export_data.html', context)
 
