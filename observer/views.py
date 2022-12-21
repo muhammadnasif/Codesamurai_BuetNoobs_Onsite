@@ -30,14 +30,14 @@ def load(request):
     # projects = Project.objects.values('category').distinct()
 
     projects = []
-    if Agency.objects.get(name=request.session.get('agency')) == 'EXEC':
+    if 'agency' in request.session and Agency.objects.get(name=request.session.get('agency')) == 'EXEC':
         exec = True
     else:
         exec = False
 
     context = {
         "projects": projects,
-        "agency": Agency.objects.get(name=request.session.get('agency')),
+        "agency": None, #Agency.objects.get(name=request.session.get('agency')),
         "user": request.session.get('username'),
         "exec": exec,
     }
@@ -152,15 +152,23 @@ def project_proposal(request):
             }
             revisedProposed.append(newP)
     if request.method == 'GET':
-        return render(request, 'base/projects.html', {"context": revisedProposed})
+        return render(request, 'base/projects.html', {"context": revisedProposed, 'data' : {
+            'name' : '',
+            'area': '',
+            'lat': '',
+            'long': '',
+            'cost': '',
+            'goal': '',
+            'timespan': '',
+        }})
     else:
         print("adasdasddas")
         print(request.POST)
 
         location = Location.objects.filter(name=request.POST['propose-form-area'])
         if len(location) == 0:
-            location = Location.objects.create(name=request.POST['propose-form-area'])
-            location.save()
+            new_location = Location.objects.create(name=request.POST['propose-form-area'])
+            new_location.save()
 
         agency = Agency.objects.get(name=request.session.get('agency'))
         name = request.POST['propose-form-name']
@@ -170,14 +178,27 @@ def project_proposal(request):
         goal = request.POST['propose-form-goal']
         timespan = request.POST['propose-form-timespan']
         # print(name, lat, long, cost, goal, timespan)
-        project = Project_Core.objects.create(name=name, executing_agency=agency, latitude=lat, longitude=long,
-                                              expected_cost=cost,
-                                              goal=goal, timespan=timespan)
-        project.save()
-        project.locations.add(location)
-        pp = Proposed_Project.objects.create(project=project)
-        pp.save()
-        return render(request, 'base/projects.html', {"context": revisedProposed})
+
+        if Project_Core.objects.filter(name=name).exists():
+            project = Project_Core.objects.get(name=name)
+            project.locations.clear()
+            project.locations.add(location[0].id)
+            project.name = name
+            project.lat = lat
+            project.long = long
+            project.cost = cost
+            project.goal = goal
+            project.timespan = timespan
+
+            project.save()
+        else:
+            project = Project_Core.objects.create(name=name, executing_agency=agency, latitude=lat, longitude=long, expected_cost=cost,
+                               goal=goal, timespan=timespan)
+            project.save()
+            project.locations.add(location)
+            pp = Proposed_Project.objects.create(project=project)
+            pp.save()
+        return redirect(reverse('observer:project-proposal'))
 
 
 def update_proposal(request):
@@ -195,6 +216,22 @@ def update_proposal(request):
     }
     print(update)
     return render(request, 'base/projects.html', {"context": revisedProposed, "update": update})
+
+
+def proposal_update_form(request, pk):
+    revisedProposed = getRevisedProposed(request.session.get('agency'))
+    proposed_project = Proposed_Project.objects.get(project__id=pk)
+    proposed_project = {
+        'name' : proposed_project.project.name,
+        'area': proposed_project.project.locations.all()[0].name,
+        'lat': proposed_project.project.latitude,
+        'long': proposed_project.project.longitude,
+        'cost': proposed_project.project.expected_cost,
+        'goal': proposed_project.project.goal,
+        'timespan': proposed_project.project.timespan
+    }
+    if request.method == 'GET':
+        return render(request, 'base/projects.html', {"data": proposed_project, "context": revisedProposed})
 
 
 def getRevisedProposed(agency):
