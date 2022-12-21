@@ -13,7 +13,6 @@ urlpatterns = [
                   path('logout/', observer_au.logout_request, name='logout'),
                   path('registration/', observer_au.registration, name='register'),
                   path('utility/', include('utility_engines.urls', namespace='utility')),
-                  path('test/', observer_au.test, name='test'),
 
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

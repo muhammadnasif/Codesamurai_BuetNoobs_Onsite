@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.urls import reverse
+from djqscsv import render_to_csv_response, write_csv
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 from .models import *
@@ -240,23 +240,37 @@ def update_project_proposal(request, pk):
     if request.method == 'GET':
         return render(request, 'base/update_project_proposal.html', {'proposed_project': proposed_project})
 
-
     return
 
 
 def export_data(request):
-
     return render(request, 'base/export_data.html')
 
 
 def export_data_search(request):
-    if request.method == 'POST':
-        print(request.POST)
-        if 'export' in request.POST:
-            print("exporting")
-            return Response({'status': '1'})
-        else:
-            print("searching")
-            return Response({'status': '1'})
+    print("export_data_search paisi")
+    print(request.POST)
+    if 'is_approved' in request.POST:
+        approved_projects = Approved_Project.objects.filter(project__name__icontains=request.POST['search'])
+        context = {
+            'projects': approved_projects
+        }
+    else:
+        proposed_projects = Proposed_Project.objects.filter(project__name__icontains=request.POST['search'])
+        context = {
+            'projects': proposed_projects
+        }
+    print(context)
+    return render(request, 'base/export_data.html', context)
 
+
+def test_func(request):
+    print("test_func")
+    qs = Project_Core.objects.filter(is_approved=False)
+
+    with open('foo.csv', 'wb') as csv_file:
+        print("csv file open")
+        write_csv(qs, csv_file)
+        print("csv file write")
+    # return render_to_csv_response(qs)
     return render(request, 'base/export_data.html')

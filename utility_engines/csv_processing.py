@@ -373,3 +373,7 @@ def fill_initial_data():
 
     
 
+
+
+def create_csv(query_obj):
+    pass
