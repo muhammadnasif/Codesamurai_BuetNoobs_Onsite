@@ -17,5 +17,6 @@ urlpatterns = [
     # path('project-proposal/update-proposal/', observer_views.update_proposal, name='update-proposal'),
     path('update-proposal/<int:pk>/', observer_views.proposal_update_form, name='update-proposal-form'),
     path('add-rating/', observer_views.add_rating, name='add-rating'),
-
+    path('export-data/',observer_views.export_data, name='export-data'),
+    path('export-data-search/',observer_views.export_data_search, name='export-data-search'),
 ]

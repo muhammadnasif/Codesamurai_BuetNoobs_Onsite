@@ -181,6 +181,7 @@ def project_proposal(request):
         goal = request.POST['propose-form-goal']
         timespan = request.POST['propose-form-timespan']
         # print(name, lat, long, cost, goal, timespan)
+
         if Project_Core.objects.filter(name=name).exists():
             project = Project_Core.objects.get(name=name)
             project.locations.clear()
@@ -202,6 +203,7 @@ def project_proposal(request):
             pp.save()
         return redirect(reverse('observer:project-proposal'))
 
+
 def update_proposal(request):
     revisedProposed = getRevisedProposed(request.session.get('agency'))
     print(request.POST['core_id'])
@@ -216,7 +218,8 @@ def update_proposal(request):
         'timespan': project.timespan
     }
     print(update)
-    return render(request, 'base/projects.html', {"context": revisedProposed, "update":update})
+    return render(request, 'base/projects.html', {"context": revisedProposed, "update": update})
+
 
 def proposal_update_form(request, pk):
     revisedProposed = getRevisedProposed(request.session.get('agency'))
@@ -251,6 +254,7 @@ def getRevisedProposed(agency):
             revisedProposed.append(newP)
     return revisedProposed
 
+
 @api_view(['POST'])
 def add_rating(request):
     if request.POST:
@@ -263,3 +267,33 @@ def add_rating(request):
             return Response({'status': '1'})
 
     return Response({'msg': 'no data saved'})
+
+
+def update_project_proposal(request, pk):
+    pass
+
+    proposed_project = Proposed_Project.objects.get(id=pk)
+    project = proposed_project.project
+    if request.method == 'GET':
+        return render(request, 'base/update_project_proposal.html', {'proposed_project': proposed_project})
+
+
+    return
+
+
+def export_data(request):
+
+    return render(request, 'base/export_data.html')
+
+
+def export_data_search(request):
+    if request.method == 'POST':
+        print(request.POST)
+        if 'export' in request.POST:
+            print("exporting")
+            return Response({'status': '1'})
+        else:
+            print("searching")
+            return Response({'status': '1'})
+
+    return render(request, 'base/export_data.html')

@@ -1,14 +1,12 @@
-
-
-
-window.addEventListener('load', function (e){
-  console.log("Proposed Called");
+window.addEventListener('load', function (e) {
+    console.log("Proposed Called");
 })
-function ProposalEdit(){
-  console.log("Proposal Edit Called");
-  let core = document.getElementById('core_id').value;
-  document.getElementById('core_id').value=null;
-  console.log(core);
+
+function ProposalEdit() {
+    console.log("Proposal Edit Called");
+    let core = document.getElementById('core_id').value;
+    document.getElementById('core_id').value = null;
+    console.log(core);
 }
 
 
@@ -28,6 +26,7 @@ function ProposalEdit(){
 //             method: 'POST',
 //             data: mydata,
 //             success: function (data) {
+
 
 //                 console.log("issue submitted successfully");
 //                 console.log(data);
