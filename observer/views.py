@@ -70,10 +70,7 @@ def filter_projects(request):
     return Response(project_list)
 
 
-def project(request):
-    if request.method == "POST":
-        print(request.POST)
-    return render(request, 'components/project.html')
+
 
 
 @api_view(['POST'])

@@ -42,6 +42,16 @@ def expected_ends_post(request):
             'cycle' : True,
         })
 
+
+def update_ends():
+    ends = compute_expected_ends()
+    if ends:
+        # update all approved projects with new expected ends
+        for project in Approved_Project.objects.all():
+            if project.project.id in ends:
+                project.expected_end = ends[project.project.id]
+                project.save()
+                
 @api_view(['GET'])
 def expected_ends_with(request, pk):
     project = Proposed_Project.objects.get(project__id=pk)

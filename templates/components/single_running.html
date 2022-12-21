@@ -1,0 +1,72 @@
+{% extends 'base/base.html' %}
+{% load static %}
+
+{% block projects %}
+    <main>
+        <div class="container-fluid px-4">
+            <h1 class="mt-4">Proposed Projects by the Agency</h1>
+            <div class="row">
+                <div class="col shadow-lg m-4">
+                    <div class="row text-center mb-3">
+                        <h2>Propose Project</h2>
+                    </div>
+                    <div class="proposal-form form-control">
+                        <form method="post" action="{% url 'observer:project-proposal' %}">
+                            {% csrf_token %}
+                            <label for="propose-form-name">Project name:</label><br>
+                            <input type="text" id="propose-form-name" class="form-control" name="propose-form-name" value="{{ data.name }}" readonly><br>
+
+                            <label for="propose-form-area">Location Area:</label><br>
+                            <input class="form-control" type="text" id="propose-form-area form-control"
+                                   name="propose-form-area" value="{{data.area}}" readonly><br>
+                            <label for="propose-form-lat">Latitude</label><br>
+                            <input class="form-control" type="text" id="propose-form-lat" name="propose-form-lat"
+                                   required value="{{data.lat}}" readonly><br>
+                            <label for="propose-form-long">Longitude</label><br>
+                            <input class="form-control" type="text" id="propose-form-long" name="propose-form-long"
+                                   required value="{{data.long}}" readonly><br>
+
+
+                            <label for="propose-form-cost">Project cost:</label><br>
+                            <input class="form-control" type="number" id="propose-form-cost"
+                                   name="propose-form-cost" value="{{data.cost}}" readonly><br>
+
+                            <label for="propose-form-timespan">Project timespan:</label><br>
+                            <input class="form-control" type="number" id="propose-form-timespan"
+                                   name="propose-form-timespan" value="{{data.timespan}}" readonly><br>
+
+                            <label for="propose-form-goal">Project goal:</label><br>
+                            <input class="form-control" type="textarea" id="propose-form-goal" name="propose-form-goal" value="{{data.goal}}" readonly><br>
+
+                            <label for="propose-form-proposed-date">Proposed Date:</label><br>
+                            <input class="form-control" type="textarea" id="propose-form-proposed-date" name="propose-form-proposed-date" value="{{data.proposed_date}}" readonly><br>
+
+                            <label for="propose-form-start">Starting Date Estimation:</label><br>
+                            <input class="form-control" type="textarea" id="propose-form-start" name="propose-form-start" value="{{data.estimate_start}}" readonly><br>
+
+                            <label for="propose-form-end">Ending Date Estimation</label><br>
+                            <input class="form-control" type="textarea" id="propose-form-end" name="propose-form-end" value="{{data.estimated_end}}" readonly><br>
+
+                            <div class="row text-center px-2">
+
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+                <div class="col shadow-lg m-4">
+                    {% include 'components/location_register_map.html' %}
+
+                    <div class="d-flex justify-content-center">
+                        <h4 class="mt-4">
+                            Drag the marker to select the project coordinate
+                        </h4>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+{% endblock %}
+
