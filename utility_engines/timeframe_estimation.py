@@ -87,7 +87,7 @@ def suggest_timeframe_forall(projects):
             }
         else:
         
-            res = simulate(list_components, copy.deepcopy(all_components), p, copy.deepcopy(required), copy.deepcopy(agencies), copy.deepcopy(locations))
+            res = simulate(copy.deepcopy(list_components), copy.deepcopy(all_components), p, copy.deepcopy(required), copy.deepcopy(agencies), copy.deepcopy(locations))
 
             result[p.project.id] = {
                 'cycle' : False,
