@@ -7,31 +7,34 @@ var category_set = new Set();
 
 
 window.addEventListener("load", async(event) => {
-    const response = await fetch('/api/projects');
+    const response = await fetch('/api/all-projects');
     data = await response.json();
+
+    console.log("data paisi");
+    console.log(data);
 
     total_coord = 0;
     total_marker = 0;
 
     for (let i = 0; i < data.length; i++) {
 
-        for (let j = 0; j < data[i].location_coordinates.length; j++) {
+        // for (let j = 0; j < data[i].location_coordinates.length; j++) {
 
-            var markerElem = L.marker([data[i].location_coordinates[j].coord[0], data[i].location_coordinates[j].coord[1]])
+            var markerElem = L.marker([data[i].lat, data[i].lng])
                 .bindPopup(data[i].project_name)
                 .addEventListener('click', async() => {
 
                     document.getElementById('pop-up-project-name').innerText = data[i]['project_name'];
-                    document.getElementById('pop-up-category').innerText = data[i]['category'];
-                    agencies = data[i]['affiliated_agency']
-                    let agency_names = agencies.map(function(x){return x.name});
-                    console.log(agency_names)
-                    document.getElementById('pop-up-affiliated-agency').innerText = agency_names.join(', ');
-                    document.getElementById('pop-up-description').innerText = data[i]['description'];
-                    document.getElementById('pop-up-start-time').innerText = data[i]['project_start_time'];
-                    document.getElementById('pop-up-completion-time').innerText = data[i]['project_completion_time'];
-                    document.getElementById('location-hidden').value = data[i].location_coordinates[j].id;
-                    // document.getElementById('pop-up-coord').innerText =
+                    document.getElementById('pop-up-agency').innerText = data[i]['agency'];
+                    document.getElementById('pop-up-actual-cost').innerText = data[i]['category'];
+                    document.getElementById('pop-up-expected-cost').innerText = data[i]['expected_cost'];
+                    document.getElementById('pop-up-expected-time-span').innerText = data[i]['timespan'];
+                    document.getElementById('pop-up-goal').innerText = data[i]['goal'];
+                    document.getElementById('pop-up-start-time').innerText = data[i]['start_time'];
+                    document.getElementById('pop-up-completion-time').innerText = data[i]['completion'];
+                    // completion
+                    document.getElementById('location-hidden').value = data[i]['project_id']
+                    document.getElementById('pop-up-actual-cost').value = data[i]['actual_cost']
 
                     $('#exampleModal').modal('show')
 
@@ -45,15 +48,10 @@ window.addEventListener("load", async(event) => {
             map.addLayer(markerArray[total_marker]);
             total_marker++;
 
-            setView_x += data[i].location_coordinates[j].coord[0];
-            setView_y += data[i].location_coordinates[j].coord[1];
-            total_coord++;
-        }
+        // }
     }
 
 
-    setView_x = setView_x / total_coord;
-    setView_y = setView_y / total_coord;
 
 
 });
