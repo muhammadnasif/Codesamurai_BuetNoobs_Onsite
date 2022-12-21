@@ -41,4 +41,13 @@ def expected_ends_post(request):
             'success' : False,
             'cycle' : True,
         })
-    
+
+
+def update_ends():
+    ends = compute_expected_ends()
+    if ends:
+        # update all approved projects with new expected ends
+        for project in Approved_Project.objects.all():
+            if project.project.id in ends:
+                project.expected_end = ends[project.project.id]
+                project.save()

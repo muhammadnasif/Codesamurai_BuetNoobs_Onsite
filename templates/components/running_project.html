@@ -18,7 +18,7 @@
                                 <th class="demo-tdh">Timespan</th>
                                 <th class="demo-tdh">Goal</th>
                                 <th class="demo-tdh">Start Date</th>
-                                <th class="demo-tdh">Details</th>
+                                <th class="demo-tdh">End Estimation</th>
                             </tr>
                             {% for p in context %}
                                 <tr class="demo-tr">
@@ -32,10 +32,7 @@
                                     <td class="demo-tdh">{{ p.timespan }}</td>
                                     <td class="demo-tdh">{{ p.goal }}</td>
                                     <td class="demo-tdh">{{ p.start_date }}</td>
-                                    <td class="demo-tdh">
-                                        <button class="btn btn-success" >Details
-                                        </button>
-                                    </td>
+                                    <td class="demo-tdh">{{ p.expected_end }}</td>
                                 </tr>
                             {% endfor %}
                         </table>

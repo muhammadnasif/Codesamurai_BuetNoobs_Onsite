@@ -34,9 +34,10 @@
                                 <td class="demo-tdh">{{ p.proposed_date }}</td>
                                 <td class="demo-tdh">
                                     <input type="hidden" id="core_id" value="{{ p.core_id }}">
-                                    <button class="btn btn-success" >
+                                    <button class="btn btn-success btn-proposal-edit" data-core-id="{{ p.core_id }}" onclick="location.href=`{% url 'observer:detail-project-proposal' p.core_id %}`;">
                                         Details
                                     </button>
+
                                 </td>
                             </tr>
                         {% endfor %}
