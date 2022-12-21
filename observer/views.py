@@ -55,10 +55,10 @@ def load_not_found(request):
 def projects(request):
     fill_initial_data()
 
-    project_list = [
-        approved_project_convert(p) for p in Project_Core.objects.filter(is_approved=True)
-    ]
-    return Response(project_list)
+    # project_list = [
+    #     approved_project_convert(p) for p in Project_Core.objects.filter(is_approved=True)
+    # ]
+    return Response({})
 
 
 @api_view(['GET'])
