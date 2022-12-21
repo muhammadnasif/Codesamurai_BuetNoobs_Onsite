@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse
 from observer.models import *
-from utility_engines.timeframe_estimation import suggest_timeframe, compute_expected_ends, suggest_timeframe_forall
+from utility_engines.timeframe_estimation import suggest_timeframe, compute_expected_ends, suggest_timeframe_forall, compute_expected_ends_detailed
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -40,6 +40,21 @@ def expected_ends_post(request):
         return Response({
             'success' : False,
             'cycle' : True,
+        })
+
+@api_view(['GET'])
+def expected_ends_with(request, pk):
+    project = Proposed_Project.objects.get(project__id=pk)
+    ends = compute_expected_ends_detailed(project)
+    if ends is None:
+        return Response({
+            'cycle' : True,
+            'ends' : []
+        })
+    else:
+        return Response({
+            'cycle' : False,
+            'ends' : ends
         })
     
 @api_view(['GET'])
