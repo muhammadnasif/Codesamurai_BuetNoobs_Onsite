@@ -32,6 +32,12 @@ def approve_proposal(request, pk):
     project.is_approved = True
     approveProject = Approved_Project.objects.create(project=project, start_date=estimate_time[0], actual_cost=project.expected_cost, expected_end=estimate_time[1])
     approveProject.save()
+    proposed_project.delete()
+    return redirect(reverse('observer:review-project-proposal'))
+
+def reject_proposal(request, pk):
+    proposed_project = Proposed_Project.objects.get(id=pk)
+    proposed_project.delete()
     return redirect(reverse('observer:review-project-proposal'))
 def detail_project_proposal(request, pk):
     proposed_project = Proposed_Project.objects.get(project__id=pk)

@@ -51,7 +51,8 @@
                                 <div>
                                     <button class="btn btn-success" onclick="location.href=`{% url 'observer:approve-proposal' data.id %}`;">Approve
                                     </button>
-                                    <button class="btn btn-danger">Reject</button>
+                                    <button class="btn btn-danger" onclick="location.href=`{% url 'observer:reject-proposal' data.id %}`;">Reject
+                                    </button>
                                 </div>
                             </div>
 

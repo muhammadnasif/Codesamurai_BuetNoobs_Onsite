@@ -19,6 +19,7 @@ urlpatterns = [
     path('add-rating/', observer_views.add_rating, name='add-rating'),
     path('review-project-proposal/<int:pk>/', review_view.detail_project_proposal, name='detail-project-proposal'),
     path('approve-proposal/<int:pk>/', review_view.approve_proposal, name='approve-proposal'),
+    path('reject-proposal/<int:pk>/', review_view.reject_proposal, name='reject-proposal'),
     path('review-project-proposal/', review_view.review_project_proposal, name='review-project-proposal'),
     path('running-project/', review_view.running_project, name='running-project'),
     path('running-project/<int:pk>/', review_view.detail_running_project, name='detail-running-project'),
