@@ -1,6 +1,6 @@
 from django.shortcuts import render, HttpResponse
 from observer.models import *
-from utility_engines.timeframe_estimation import suggest_timeframe, compute_expected_ends
+from utility_engines.timeframe_estimation import suggest_timeframe, compute_expected_ends, suggest_timeframe_forall
 from rest_framework.response import Response
 from rest_framework.decorators import api_view
 
@@ -42,3 +42,8 @@ def expected_ends_post(request):
             'cycle' : True,
         })
     
+@api_view(['GET'])
+def suggest_all(request):
+    projects = Proposed_Project.objects.all()
+    res = suggest_timeframe_forall(projects)
+    return Response(res)

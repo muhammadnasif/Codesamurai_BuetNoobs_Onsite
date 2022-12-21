@@ -14,31 +14,31 @@
                         <form method="post" action="{% url 'observer:project-proposal' %}">
                             {% csrf_token %}
                             <label for="propose-form-name">Project name:</label><br>
-                            <input type="text" id="propose-form-name" class="form-control" name="propose-form-name"><br>
+                            <input type="text" id="propose-form-name" class="form-control" name="propose-form-name" value="{{ data.name }}"><br>
 
                             <label for="propose-form-area">Location Area:</label><br>
                             <input class="form-control" type="text" id="propose-form-area form-control"
-                                   name="propose-form-area"><br>
+                                   name="propose-form-area" value="{{data.area}}"><br>
                             <label for="propose-form-lat">Latitude</label><br>
                             <input class="form-control" type="text" id="propose-form-lat" name="propose-form-lat"
-                                   required><br>
+                                   required value="{{data.lat}}"><br>
                             <label for="propose-form-long">Longitude</label><br>
                             <input class="form-control" type="text" id="propose-form-long" name="propose-form-long"
-                                   required><br>
+                                   required value="{{data.long}}"><br>
 
 
                             <label for="propose-form-cost">Project cost:</label><br>
                             <input class="form-control" type="number" id="propose-form-cost"
-                                   name="propose-form-cost"><br>
+                                   name="propose-form-cost" value="{{data.cost}}"><br>
 
                             <label for="propose-form-timespan">Project timespan:</label><br>
                             <input class="form-control" type="number" id="propose-form-timespan"
-                                   name="propose-form-timespan"><br>
+                                   name="propose-form-timespan" value="{{data.timespan}}"><br>
 
                             <label for="propose-form-goal">Project goal:</label><br>
-                            <input class="form-control" type="textarea" id="propose-form-goal" name="propose-form-goal"><br>
+                            <input class="form-control" type="textarea" id="propose-form-goal" name="propose-form-goal" value="{{data.goal}}"><br>
                             <div class="row text-center px-2">
-                                <button type="submit" class="btn btn-outline-primary">Propose</button>
+                                <button type="submit" class="btn btn-outline-primary">{% if data.name %}Update {% else %} Propose {% endif %}</button>
                             </div>
 
                         </form>
@@ -79,7 +79,7 @@
                         <td class="demo-tdh">{{ p.proposed_date }}</td>
                         <td class="demo-tdh">
                             <input type="hidden" id="core_id" value="{{ p.core_id }}">
-                            <button class="btn btn-success btn-proposal-edit" data-core-id="{{ p.core_id }}">Edit
+                            <button class="btn btn-success btn-proposal-edit" data-core-id="{{ p.core_id }}" onclick="location.href=`{% url 'observer:update-proposal-form' p.core_id %}`;">Edit
                             </button>
                         </td>
                     </tr>
