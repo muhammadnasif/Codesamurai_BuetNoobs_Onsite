@@ -160,7 +160,6 @@ def project_proposal(request):
             'timespan': '',
         }})
     else:
-        print("adasdasddas")
         print(request.POST)
 
         location = Location.objects.filter(name=request.POST['propose-form-area'])
@@ -175,26 +174,31 @@ def project_proposal(request):
         cost = request.POST['propose-form-cost']
         goal = request.POST['propose-form-goal']
         timespan = request.POST['propose-form-timespan']
-        # print(name, lat, long, cost, goal, timespan)
+        print(name, lat, long, cost, goal, timespan)
 
         if Project_Core.objects.filter(name=name).exists():
             project = Project_Core.objects.get(name=name)
             project.locations.clear()
             project.locations.add(location[0].id)
             project.name = name
-            project.lat = lat
-            project.long = long
-            project.cost = cost
+            project.latitude = lat
+            project.longitude = long
+            project.expected_cost = cost
             project.goal = goal
             project.timespan = timespan
-
+            print('Saving Project Pre')
             project.save()
         else:
             project = Project_Core.objects.create(name=name, executing_agency=agency, latitude=lat, longitude=long,
                                                   expected_cost=cost,
                                                   goal=goal, timespan=timespan)
             project.save()
-            project.locations.add(location)
+            print('Saving Project new')
+            location = Location.objects.filter(name=request.POST['propose-form-area'])
+            if len(location) == 0:
+                new_location = Location.objects.create(name=request.POST['propose-form-area'])
+                new_location.save()
+            project.locations.add(location[0])
             pp = Proposed_Project.objects.create(project=project)
             pp.save()
         return redirect(reverse('observer:project-proposal'))
